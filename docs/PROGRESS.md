@@ -35,25 +35,27 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 
 ### A. Problem Tanımı
 <!-- Status: NOT STARTED -->
+<!-- Datablist seed verisi, kontrollü bozma ve ETL pipeline tasarımı -->
 
 ### B. Ortam Kurulumu
 <!-- Status: NOT STARTED -->
-<!-- PostgreSQL container, veritabanı, tablo yapısı, ham veri seti -->
+<!-- PostgreSQL docker-compose, schema tipleri, data/source/customers_seed.csv indirilmesi -->
 
 ### C. Başlangıç Durumu
 <!-- Status: NOT STARTED -->
-<!-- Kirli veriyi staging tabloya yükle, sorunları göster -->
+<!-- seed import, 01b_make_dirty.sql ile veriyi kirletme (duplicate, invalid email vb.), ekran görüntüleri -->
 
 ### D. Uygulama
 <!-- Status: NOT STARTED -->
-<!-- Temizlik scriptleri, veri dönüştürme, hedef tabloya yükleme -->
+<!-- 02_etl_process.sql: Temizleme kuralları, customers_clean ve customers_rejected tablolarına INSERT -->
 
 ### E. Sonuç / Kanıt
 <!-- Status: NOT STARTED -->
-<!-- Kalite raporu, ham vs temiz karşılaştırma, ekran görüntüleri -->
+<!-- 03_quality_report.sql: Veri kalite analizi (temiz/red/toplam), son ekran görüntüleri -->
 
 ### F. Raporlama
 <!-- Status: NOT STARTED -->
+<!-- README.md içinde 10 başlıklı teknik rapor -->
 
 ### G. Video
 <!-- Status: NOT STARTED -->

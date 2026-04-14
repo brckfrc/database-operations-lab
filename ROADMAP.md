@@ -80,31 +80,32 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` Proje amacını ve gösterilecek sorunları netleştir
+- `[ ]` Projede dış kaynaktan (`Datablist` örnek müşteri verisi) alınan temiz verinin kontrollü bozularak ETL sürecinden geçirilmesi hedefini netleştir.
 
 **B. Ortam Kurulumu**
-- `[ ]` PostgreSQL container kur
-- `[ ]` Veritabanı ve tablo yapısını oluştur
-- `[ ]` Ham veri seti al / oluştur
+- `[ ]` PostgreSQL `docker-compose.yml` hazırla ve başlat.
+- `[ ]` `data/source/customers_seed.csv` dosyasını indir (Datablist customers-100.csv tabanlı).
+- `[ ]` Veritabanında `customers_raw` (staging), `customers_clean` ve `customers_rejected` tablo yapılarını oluştur.
 
 **C. Başlangıç Durumu**
-- `[ ]` Kirli veriyi staging tabloya yükle
-- `[ ]` Sorunları göster (NULL, duplikasyon, format hataları)
+- `[ ]` Seed verisini `customers_raw` tablosuna import et.
+- `[ ]` Kontrollü veri bozma katmanını çalıştır (`make_dirty.py` veya `01b_make_dirty.sql`).
+- `[ ]` Verideki sorunları (invalid email, duplicate, bad phone) izle ve kanıt (screenshot) al.
 
 **D. Uygulama**
-- `[ ]` Temizlik scriptleri yaz (NULL, duplikasyon, format)
-- `[ ]` Veri dönüştürme kurallarını uygula
-- `[ ]` Hedef tabloya yükleme (ETL pipeline)
+- `[ ]` `sql/02_etl_process.sql` ile temizlik scriptini yaz (Phone formatting, INITCAP, null handling).
+- `[ ]` Temizlenen kayıtları `customers_clean` tablosuna aktar.
+- `[ ]` Kurtarılamayanları (sabit hata, tamamen fake değer) `customers_rejected` tablosuna aktar.
 
 **E. Sonuç / Kanıt**
-- `[ ]` Kalite raporu çıkar (ham vs temiz karşılaştırma)
-- `[ ]` Önce-sonra ekran görüntüleri al
+- `[ ]` Ekran görüntüleri ile önce/sonra farklarını topla.
+- `[ ]` `sql/03_quality_report.sql` ile Data Quality Report çıkart (Kaç kayıt geldi, kaçı temizlendi, kaçı rejected oldu).
 
 **F. Raporlama**
-- `[ ]` 10 başlıklı teknik rapor yaz
+- `[ ]` `project-5-etl/README.md` altında 10 başlıklı proje raporunu yaz.
 
 **G. Video**
-- `[ ]` ≥ 10 dk video çek
+- `[ ]` ETL workflow'unu adım adım anlatan ≥ 10 dk video çek.
 
 ---
 

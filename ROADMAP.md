@@ -80,26 +80,26 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` Projede dış kaynaktan (`Datablist` örnek müşteri verisi) alınan temiz verinin kontrollü bozularak ETL sürecinden geçirilmesi hedefini netleştir.
+- `[ ]` İki farklı dış kaynaktan (`customers.csv` ve `leads.csv`) gelen verilerin, ortak bir hedef tabloda birleştirilmesi ve standartlaştırılması hedefini netleştir.
 
 **B. Ortam Kurulumu**
 - `[ ]` PostgreSQL `docker-compose.yml` hazırla ve başlat.
-- `[ ]` `data/source/customers_seed.csv` dosyasını indir (Datablist customers-100.csv tabanlı).
-- `[ ]` Veritabanında `customers_raw` (staging), `customers_clean` ve `customers_rejected` tablo yapılarını oluştur.
+- `[ ]` `customers_seed.csv` ve `leads_seed.csv` dosyalarını projeye indir.
+- `[ ]` Veritabanında raw (`stg_customers`, `stg_leads`) ve target (`crm_contacts_clean`, `crm_contacts_rejected`) tablolarını yarat.
 
 **C. Başlangıç Durumu**
-- `[ ]` Seed verisini `customers_raw` tablosuna import et.
-- `[ ]` Kontrollü veri bozma katmanını çalıştır (`make_dirty.py` veya `01b_make_dirty.sql`).
-- `[ ]` Verideki sorunları (invalid email, duplicate, bad phone) izle ve kanıt (screenshot) al.
+- `[ ]` Her iki seed verisini de kendi staging tablolarına import et.
+- `[ ]` Kontrollü veri bozma katmanını çalıştır (`make_dirty.sql` ile duplicate, null, cross-duplicate yarat).
+- `[ ]` Verideki dağınıklığı ve uyumsuzluğu (farklı kolonlar, yanlış formatlar) izle.
 
 **D. Uygulama**
-- `[ ]` `sql/02_etl_process.sql` ile temizlik scriptini yaz (Phone formatting, INITCAP, null handling).
-- `[ ]` Temizlenen kayıtları `customers_clean` tablosuna aktar.
-- `[ ]` Kurtarılamayanları (sabit hata, tamamen fake değer) `customers_rejected` tablosuna aktar.
+- `[ ]` `sql/02_etl_process.sql` ile iki farklı tabloyu (`UNION ALL`) birleştirip standartlaştıran ETL adımını yaz.
+- `[ ]` İki kaynak arasında çakışan (aynı email) verileri tekilleştir (Customer > Lead önceliği vb.).
+- `[ ]` Kurtarılamayanları (sabit hata, tamamen fake değer) rejected tablosuna aktar.
 
 **E. Sonuç / Kanıt**
-- `[ ]` Ekran görüntüleri ile önce/sonra farklarını topla.
-- `[ ]` `sql/03_quality_report.sql` ile Data Quality Report çıkart (Kaç kayıt geldi, kaçı temizlendi, kaçı rejected oldu).
+- `[ ]` Ekran görüntüleri ile kaynak ayrımını ve temizleme farklarını topla.
+- `[ ]` `sql/03_quality_report.sql` ile entegrasyon/kalite raporu çıkart (Kaç Lead, Kaç Customer temizlendi, kaçı rejected oldu).
 
 **F. Raporlama**
 - `[ ]` `project-5-etl/README.md` altında 10 başlıklı proje raporunu yaz.

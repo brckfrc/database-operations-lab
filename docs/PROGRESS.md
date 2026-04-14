@@ -35,23 +35,23 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 
 ### A. Problem Tanımı
 <!-- Status: NOT STARTED -->
-<!-- Datablist seed verisi, kontrollü bozma ve ETL pipeline tasarımı -->
+<!-- İki veri kümesinin (Customers, Leads) ortak birleştirilmiş hedef CRM tablolarına standartlaştırılarak aktarılması -->
 
 ### B. Ortam Kurulumu
 <!-- Status: NOT STARTED -->
-<!-- PostgreSQL docker-compose, schema tipleri, data/source/customers_seed.csv indirilmesi -->
+<!-- PostgreSQL docker-compose, schema tipleri (stg_customers, stg_leads, crm_contacts_clean), csv dosyalarının indirilmesi -->
 
 ### C. Başlangıç Durumu
 <!-- Status: NOT STARTED -->
-<!-- seed import, 01b_make_dirty.sql ile veriyi kirletme (duplicate, invalid email vb.), ekran görüntüleri -->
+<!-- seed import (x2), 01b_make_dirty.sql ile her iki tablonun kirletilmesi, çakışmaların (cross-duplicate) oluşturulması -->
 
 ### D. Uygulama
 <!-- Status: NOT STARTED -->
-<!-- 02_etl_process.sql: Temizleme kuralları, customers_clean ve customers_rejected tablolarına INSERT -->
+<!-- 02_etl_process.sql: İki kaynağın UNION ALL ile birleşimi, Customer > Lead önceliği, validation ve INSERT -->
 
 ### E. Sonuç / Kanıt
 <!-- Status: NOT STARTED -->
-<!-- 03_quality_report.sql: Veri kalite analizi (temiz/red/toplam), son ekran görüntüleri -->
+<!-- 03_quality_report.sql: Veri kalite analizi (Customer Clean / Lead Clean / Reddedilenler), son ekran görüntüleri -->
 
 ### F. Raporlama
 <!-- Status: NOT STARTED -->

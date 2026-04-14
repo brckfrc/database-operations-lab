@@ -111,40 +111,55 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ### Proje 1 — Veritabanı Performans Optimizasyonu ve İzleme (MSSQL)
 
-**Amaç:** Yavaş sorguları tespit etmek, indeks ve sorgu iyileştirmesi uygulamak, izleme araçlarıyla önce-sonra farkını göstermek.
+**Amaç:** Bir e-ticaret sipariş veritabanı üzerinde yavaş sorguları tespit etmek, indeks ve sorgu iyileştirmesi uygulamak, DMV izleme araçlarıyla önce-sonra farkını somut metriklerle göstermek.
 
-**Gösterilecek Problemler:** Yavaş SELECT sorguları · gereksiz indeksler · eksik indeksler · kötü filtreleme · yüksek IO / uzun execution süresi.
+**Senaryo:** E-ticaret sipariş sistemi — `customers`, `products`, `orders`, `order_items` tabloları. Veri tamamen T-SQL ile sentetik üretilir (tekrar üretilebilir, repo'yu klonlayan herkes aynı ortamı kurabilir).
 
-**Kanıt:** Önce-sonra sorgu süreleri, execution plan görüntüleri, kullanılan index listesi, kısa performans özeti.
+**Hedef Veri Hacmi:** customers ~100K · products ~20K · orders ~500K–1M · order_items ~1–2M.
+
+**Gösterilecek Problemler:** Non-sargable filtre (`YEAR(order_date)`) · gereksiz `SELECT *` · indekssiz JOIN · gereksiz indeksin yazma maliyeti · yüksek logical reads / CPU time.
+
+**Kanıt:** `SET STATISTICS IO, TIME ON` çıktıları · execution plan ekran görüntüleri (önce-sonra) · logical reads / elapsed time karşılaştırma tablosu · DMV sorgu çıktıları.
 
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` Proje amacını ve gösterilecek sorunları netleştir
+- `[ ]` E-ticaret sipariş senaryosunu tanımla: müşteriler sipariş verir, siparişler kalem bazında ürün içerir.
+- `[ ]` Gösterilecek 4 kötü sorgu patternini belirle: (1) non-sargable date filter, (2) SELECT * + eksik covering index, (3) indekssiz JOIN, (4) gereksiz indeksin INSERT maliyeti.
 
 **B. Ortam Kurulumu**
-- `[ ]` MSSQL container kur (Apple Silicon → `azure-sql-edge`)
-- `[ ]` Örnek veritabanı oluştur; büyük tablo + yapay veri ekle
+- `[ ]` MSSQL container'ı kur — `docker-compose.yml` ile `azure-sql-edge` (Apple Silicon uyumlu).
+- `[ ]` `sql/00_schema.sql` ile veritabanı ve tablo yapısını oluştur (`customers`, `products`, `orders`, `order_items`).
+- `[ ]` `sql/01_seed_lookup.sql` ile küçük lookup tablosunu (`products` — ~20K) doldur.
+- `[ ]` `sql/02_seed_large_data.sql` ile büyük tabloları T-SQL loop / `INSERT … SELECT` ile sentetik üret (`customers` ~100K, `orders` ~500K–1M, `order_items` ~1–2M). Tarihler 5 yıla yayılacak, status/region/category alanları kontrollü dağılımda.
 
 **C. Başlangıç Durumu**
-- `[ ]` Yavaş sorguları ölç (baseline)
-- `[ ]` Execution plan görüntülerini al (önce)
+- `[ ]` `sql/03_baseline_bad_queries.sql` ile 4 kötü sorguyu `SET STATISTICS IO, TIME ON` açık şekilde çalıştır ve çıktıları kaydet.
+- `[ ]` Her kötü sorgu için execution plan ekran görüntüsü al (`screenshots/before_*.png`).
 
 **D. Uygulama**
-- `[ ]` İndeks ekleme / çıkarma denemeleri
-- `[ ]` Sorgu rewrite
-- `[ ]` Profiler / DMV ile gözlem al
+- `[ ]` `sql/04_indexes_and_tuning.sql` ile iyileştirmeleri uygula:
+  - Sorgu 1: `WHERE YEAR(order_date) = 2024` → sargable range filtre + `order_date` indeksi.
+  - Sorgu 2: `SELECT *` → dar kolon seçimi + covering index.
+  - Sorgu 3: `orders ⟕ customers` indekssiz → JOIN kolonlarına uygun indeks.
+  - Sorgu 4: Gereksiz indeks ekle → INSERT benchmark ile yazma maliyetini göster, sonra indeksi kaldır.
+- `[ ]` `sql/05_after_measurement.sql` ile aynı sorguları optimizasyon sonrası tekrar çalıştır.
+- `[ ]` `sql/06_monitoring_dmv.sql` ile DMV sorguları yaz: `sys.dm_exec_query_stats`, `sys.dm_db_index_usage_stats`, `sys.dm_db_missing_index_details`.
 
 **E. Sonuç / Kanıt**
-- `[ ]` Önce-sonra sorgu sürelerini karşılaştır
-- `[ ]` Execution plan görüntüleri (sonra)
-- `[ ]` Kullanılan index listesi ve performans özeti
+- `[ ]` Her sorgu için önce-sonra logical reads / CPU time / elapsed time karşılaştırma tablosu oluştur.
+- `[ ]` Optimizasyon sonrası execution plan ekran görüntülerini al (`screenshots/after_*.png`).
+- `[ ]` Kullanılan / kaldırılan indeks listesi ve kısa performans özeti.
 
 **F. Raporlama**
-- `[ ]` 10 başlıklı teknik rapor yaz
+- `[ ]` `project-1-performance/README.md` altında 10 başlıklı proje raporunu yaz.
 
 **G. Video**
-- `[ ]` ≥ 10 dk video çek
+- `[ ]` Tüm akışı (ortam → baseline → optimizasyon → sonuç) adım adım anlatan ≥ 10 dk video çek.
+
+#### Ekstra
+
+- `[ ]` **Parameter sniffing senaryosu:** Aynı stored procedure'ü farklı parametrelerle çalıştırıp cached plan'ın kötü performansa neden olduğunu göster. `OPTION (RECOMPILE)` veya `OPTIMIZE FOR` ile düzelt. MSSQL'e özgü bir konu olduğu için projeyi diğerlerinden ayırır.
 
 ---
 

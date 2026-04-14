@@ -11,6 +11,7 @@
 - Screenshots go in `<project-dir>/screenshots/` with descriptive names (e.g., `before_index_execution_plan.png`). Never leave them with default/auto-generated names.
 - Each project must have its own `README.md` with a project summary and (eventually) a video link.
 - Commits must be small, frequent, and descriptive. One logical step per commit. Do not batch unrelated changes.
+- **Language convention:** `ROADMAP.md` is written in Turkish (instructor-facing). `docs/PROGRESS.md` is written in English (technical dev log). `AGENTS.md` and `REVIEW_GUIDE.md` are in English.
 
 ## Repo structure
 

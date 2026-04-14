@@ -66,52 +66,52 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 
 ### A. Problem Tanımı
 <!-- Status: NOT STARTED -->
-<!-- Senaryo: E-ticaret sipariş sistemi (customers, products, orders, order_items). -->
-<!-- 4 kötü sorgu patternini göster: (1) non-sargable date filter, (2) SELECT * + covering index eksikliği, (3) indekssiz JOIN, (4) gereksiz indeksin yazma maliyeti. -->
+<!-- Scenario: E-commerce order system (customers, products, orders, order_items). -->
+<!-- 4 bad query patterns to demonstrate: (1) non-sargable date filter, (2) SELECT * + missing covering index, (3) index-less JOIN, (4) unnecessary index write cost. -->
 
 ### B. Ortam Kurulumu
 <!-- Status: NOT STARTED -->
-<!-- azure-sql-edge container (Apple Silicon uyumlu), docker-compose.yml ile ayağa kaldır. -->
-<!-- 00_schema.sql: customers, products, orders, order_items tabloları. -->
-<!-- 01_seed_lookup.sql: products ~20K. -->
-<!-- 02_seed_large_data.sql: T-SQL ile sentetik üretim — customers ~100K, orders ~500K–1M, order_items ~1–2M. -->
-<!-- Tarihler 5 yıla yayılacak, status/region/category kontrollü dağılımda. Hazır CSV indirilmeyecek. -->
-<!-- Karar: Sentetik veri yaklaşımı tercih edildi. Sebep: tekrar üretilebilirlik, dağılım kontrolü, performans farkını garanti etme. -->
+<!-- azure-sql-edge container (Apple Silicon compatible), spin up via docker-compose.yml. -->
+<!-- 00_schema.sql: customers, products, orders, order_items tables. -->
+<!-- 01_seed_lookup.sql: products ~20K rows. -->
+<!-- 02_seed_large_data.sql: synthetic generation via T-SQL — customers ~100K, orders ~500K–1M, order_items ~1–2M. -->
+<!-- Dates spread across 5 years; status/region/category fields with controlled distribution. No pre-built CSV downloads. -->
+<!-- Decision: synthetic data approach chosen. Reason: reproducibility, distribution control, guaranteed performance delta. -->
 
 ### C. Başlangıç Durumu
 <!-- Status: NOT STARTED -->
-<!-- 03_baseline_bad_queries.sql: SET STATISTICS IO, TIME ON ile 4 kötü sorguyu çalıştır. -->
-<!-- Her sorgu için execution plan ekran görüntüsü al (screenshots/before_*.png). -->
-<!-- Beklenen: full table scan, high logical reads, yüksek CPU/elapsed time. -->
+<!-- 03_baseline_bad_queries.sql: run 4 bad queries with SET STATISTICS IO, TIME ON and record output. -->
+<!-- Capture execution plan screenshots for each query (screenshots/before_*.png). -->
+<!-- Expected: full table scans, high logical reads, high CPU/elapsed time. -->
 
 ### D. Uygulama
 <!-- Status: NOT STARTED -->
 <!-- 04_indexes_and_tuning.sql: -->
-<!--   S1: YEAR(order_date) → sargable range + order_date indeksi -->
-<!--   S2: SELECT * → dar kolon + covering index -->
-<!--   S3: indekssiz join → join kolonlarına indeks -->
-<!--   S4: gereksiz indeks ekle → INSERT benchmark, sonra kaldır -->
-<!-- 05_after_measurement.sql: Aynı sorguları optimizasyon sonrası tekrar çalıştır. -->
+<!--   Q1: YEAR(order_date) → sargable range filter + order_date index -->
+<!--   Q2: SELECT * → narrow column list + covering index -->
+<!--   Q3: index-less join → proper indexes on join columns -->
+<!--   Q4: add unnecessary index → INSERT benchmark to show write cost, then drop -->
+<!-- 05_after_measurement.sql: re-run same queries post-optimization. -->
 <!-- 06_monitoring_dmv.sql: sys.dm_exec_query_stats, sys.dm_db_index_usage_stats, sys.dm_db_missing_index_details -->
 
 ### E. Sonuç / Kanıt
 <!-- Status: NOT STARTED -->
-<!-- Her sorgu için önce-sonra: logical reads, CPU time, elapsed time karşılaştırma tablosu. -->
-<!-- Execution plan ekran görüntüleri (screenshots/after_*.png). -->
-<!-- Kullanılan/kaldırılan indeks listesi ve performans özeti. -->
+<!-- Before/after comparison table per query: logical reads, CPU time, elapsed time. -->
+<!-- Post-optimization execution plan screenshots (screenshots/after_*.png). -->
+<!-- List of indexes added/removed + short performance summary. -->
 
 ### F. Raporlama
 <!-- Status: NOT STARTED -->
-<!-- project-1-performance/README.md içinde 10 başlıklı teknik rapor. -->
+<!-- 10-section technical report inside project-1-performance/README.md. -->
 
 ### G. Video
 <!-- Status: NOT STARTED -->
-<!-- Ortam → baseline → optimizasyon → sonuç akışı, ≥ 10 dk. -->
+<!-- Full walkthrough: environment → baseline → optimization → results, ≥ 10 min. -->
 
 ### Ekstra
 <!-- Status: NOT STARTED -->
-<!-- Parameter sniffing: Aynı SP'yi farklı parametrelerle çalıştır, cached plan sorunu göster. -->
-<!-- OPTION (RECOMPILE) veya OPTIMIZE FOR ile düzelt. MSSQL'e özgü, projeyi farklılaştırır. -->
+<!-- Parameter sniffing: run same SP with different parameters, show cached plan causing poor performance. -->
+<!-- Fix with OPTION (RECOMPILE) or OPTIMIZE FOR. MSSQL-specific topic, differentiates this project. -->
 
 ---
 

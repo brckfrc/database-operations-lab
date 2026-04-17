@@ -3,7 +3,7 @@
 > Bu doküman, ders kapsamındaki 5 projeyi **iş bazında** takip etmek için kullanılır.
 > Her proje kendi bölümünde tanım, checklist ve teslim çıktılarıyla yer alır.
 > Orijinal plan: [`docs/BLM4522_Proje_Roadmap.pdf`](BLM4522_Proje_Roadmap.pdf)
-> Teknik detaylar ve geliştirme günlüğü için → [`docs/PROGRESS.md`](PROGRESS.md)
+> Teknik detaylar ve geliştirme günlüğü için → [`docs/PROGRESS.md`](PROGRESS.md) *(İngilizce; dil ayrımı [`docs/AGENTS.md`](AGENTS.md) içinde)*
 
 ---
 
@@ -15,7 +15,7 @@
 | 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | `[ ]` |
 | 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | `[ ]` |
 | 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | `[ ]` |
-| 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | `[ ]` |
+| 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | Kısmi *(ETL + rapor tamam; video ve `screenshots/` bekleniyor)* |
 
 ### Debian Sunucu İhtiyacı
 
@@ -75,34 +75,34 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 **Gösterilecek Problemler:** Eksik değer · yanlış format · mükerrer kayıt · tutarsız isimlendirme · bozuk tarih ve telefon alanları.
 
-**Kanıt:** Ham veri ve temiz veri karşılaştırması, ETL adımları, quality report, dönüşüm kuralları.
+**Kanıt:** Ham veri ve temiz veri karşılaştırması, ETL adımları, quality report, dönüşüm kuralları, çakışan kayıtların `crm_contacts_duplicates` üzerinden izlenebilirliği.
 
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` İki farklı dış kaynaktan (`customers.csv` ve `leads.csv`) gelen verilerin, ortak bir hedef tabloda birleştirilmesi ve standartlaştırılması hedefini netleştir.
+- `[x]` İki farklı dış kaynaktan (`data/source/customers_seed.csv`, `data/source/leads_seed.csv` — Datablist kaynaklı ~100'er satır örnek) gelen verilerin, `etl_db` içinde ortak hedef tablolarda birleştirilmesi ve standartlaştırılması hedefini netleştir. *(Kanıt: `project-5-etl/README.md` §1, §3.)*
 
 **B. Ortam Kurulumu**
-- `[ ]` PostgreSQL `docker-compose.yml` hazırla ve başlat.
-- `[ ]` `customers_seed.csv` ve `leads_seed.csv` dosyalarını projeye indir.
-- `[ ]` Veritabanında raw (`stg_customers`, `stg_leads`) ve target (`crm_contacts_clean`, `crm_contacts_rejected`) tablolarını yarat.
+- `[x]` PostgreSQL 16 `docker-compose.yml` hazırla ve başlat (`POSTGRES_DB=etl_db`). *(Kanıt: `project-5-etl/docker-compose.yml`.)*
+- `[x]` `customers_seed.csv` ve `leads_seed.csv` dosyalarını `project-5-etl/data/source/` altında tut. *(Kanıt: repo dosyaları.)*
+- `[x]` Veritabanında raw (`stg_customers`, `stg_leads`) ve hedef (`crm_contacts_clean`, `crm_contacts_rejected`, **`crm_contacts_duplicates`**) tablolarını yarat. *(Kanıt: `sql/00_init_schema.sql`.)*
 
 **C. Başlangıç Durumu**
-- `[ ]` Her iki seed verisini de kendi staging tablolarına import et.
-- `[ ]` Kontrollü veri bozma katmanını çalıştır (`make_dirty.sql` ile duplicate, null, cross-duplicate yarat).
-- `[ ]` Verideki dağınıklığı ve uyumsuzluğu (farklı kolonlar, yanlış formatlar) izle.
+- `[x]` Her iki seed verisini de kendi staging tablolarına import et (`sql/01a_import_seed.sql`, `COPY`). *(Kanıt: script.)*
+- `[x]` Kontrollü veri bozma katmanını çalıştır (`sql/01b_make_dirty.sql` — duplicate, null, cross-duplicate). *(Kanıt: script.)*
+- `[x]` Verideki dağınıklığı ve uyumsuzluğu gözlemle. *(Kanıt: `README.md` §4.)*
 
 **D. Uygulama**
-- `[ ]` `sql/02_etl_process.sql` ile iki farklı tabloyu (`UNION ALL`) birleştirip standartlaştıran ETL adımını yaz.
-- `[ ]` İki kaynak arasında çakışan (aynı email) verileri tekilleştir (Customer > Lead önceliği vb.).
-- `[ ]` Kurtarılamayanları (sabit hata, tamamen fake değer) rejected tablosuna aktar.
+- `[x]` `sql/02_etl_process.sql` ile iki tabloyu (`UNION ALL` + `TEMP TABLE` / `BEGIN…COMMIT`) birleştirip standartlaştıran ETL adımını yaz. *(Kanıt: script + `README.md` §5–§6, §9.)*
+- `[x]` İki kaynak arasında çakışan (aynı e-posta) verileri tekilleştir (**Customer > Lead**); ezilen Lead kayıtlarını `crm_contacts_duplicates` tablosuna yaz. *(Kanıt: `README.md` §5, §8; `02_etl_process.sql`.)*
+- `[x]` Kurtarılamayanları `crm_contacts_rejected` tablosuna aktar. *(Kanıt: `README.md` §5, §8.)*
 
 **E. Sonuç / Kanıt**
-- `[ ]` Ekran görüntüleri ile kaynak ayrımını ve temizleme farklarını topla.
-- `[ ]` `sql/03_quality_report.sql` ile entegrasyon/kalite raporu çıkart (Kaç Lead, Kaç Customer temizlendi, kaçı rejected oldu).
+- `[ ]` Ekran görüntüleri ile kaynak ayrımını ve temizleme farklarını topla (`project-5-etl/screenshots/` — henüz boş; README §7 planına göre video sonrası).
+- `[x]` `sql/03_quality_report.sql` ile entegrasyon/kalite raporu çıkart (ör. 185 clean, 8 suppressed duplicate, 12 rejected — `README.md` §8 tablosu).
 
 **F. Raporlama**
-- `[ ]` `project-5-etl/README.md` altında 10 başlıklı proje raporunu yaz.
+- `[x]` `project-5-etl/README.md` altında 10 başlıklı proje raporunu yaz.
 
 **G. Video**
 - `[ ]` ETL workflow'unu adım adım anlatan ≥ 10 dk video çek.

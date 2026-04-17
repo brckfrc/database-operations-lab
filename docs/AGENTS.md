@@ -45,7 +45,7 @@ root/
 - Never overwrite existing screenshots or SQL scripts without explicit instruction. Create new versioned files instead.
 - Do not modify `ROADMAP.md` structure (headings, project order) without user approval. Only toggle checkboxes.
 - **ROADMAP detailing**: Detail a project's checklist *before* starting work on it. Once work begins, keep the checklist structure stable to avoid breaking the plan-execution consistency.
-- **Extra work**: If new, unplanned work appears for a project, do NOT shoehorn it into existing checklist items. Add a `### Ekstra` section below that project's checklist and trace the work there.
+- **Extra work**: If new, unplanned work appears for a project, do NOT shoehorn it into existing checklist items. Add a dedicated **Extra** section below that project's checklist: use `#### Ekstra` in `ROADMAP.md` (Turkish) and `### Extra` in `docs/PROGRESS.md` (English), and trace the work there.
 - **Documentation Architecture**: 
   - **Centralized Tracking**: Keep ALL progress tracking, task logging, and roadmap ticking strictly in the root/docs level (`ROADMAP.md` and `docs/PROGRESS.md`). Do not create separate "Todo" or "Progress" files inside the project folders.
   - **Decentralized Output**: Keep ALL final deliverables (the 10-section technical report, video links, explanation of findings) localized to `<project-dir>/README.md`.

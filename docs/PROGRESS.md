@@ -8,6 +8,7 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 
 ## Conventions
 
+- **Language:** English only. Turkish checklist and narrative live in `ROADMAP.md` (see `docs/AGENTS.md`).
 - Entries are grouped by **project**, then by **A→G work-item** (matching ROADMAP checklist flow).
 - Each entry may contain:
   - **What was done** — concrete actions, commands, files changed
@@ -18,58 +19,66 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 
 ---
 
-## Ortak Altyapı
+## Shared infrastructure
 
-### Repo & Klasör Yapısı
+### Repository & folder structure
 <!-- Status: NOT STARTED -->
 
-### Docker Ortamı
+### Docker environment
 <!-- Status: NOT STARTED -->
 
-### Rapor Şablonu
+### Report template
 <!-- Status: NOT STARTED -->
 
 ---
 
-## Proje 5 — ETL (PostgreSQL) · Vize
+## Project 5 — ETL (PostgreSQL) · Midterm
 
-### A. Problem Tanımı
-<!-- Status: NOT STARTED -->
-<!-- İki veri kümesinin (Customers, Leads) ortak birleştirilmiş hedef CRM tablolarına standartlaştırılarak aktarılması -->
+### A. Problem definition
+<!-- Status: DONE (2026-04) -->
+<!-- Two-source CRM merge: Customers + Leads → unified clean table; Customer > Lead dedup; invalid → rejected; losing Lead rows → crm_contacts_duplicates. -->
+<!-- Evidence: project-5-etl/README.md §1 -->
 
-### B. Ortam Kurulumu
-<!-- Status: NOT STARTED -->
-<!-- PostgreSQL docker-compose, schema tipleri (stg_customers, stg_leads, crm_contacts_clean), csv dosyalarının indirilmesi -->
+### B. Environment setup
+<!-- Status: DONE -->
+<!-- docker-compose.yml: postgres:16-alpine, DB etl_db, user etl_user; sql/ and data/ mounted. -->
+<!-- Seeds: data/source/customers_seed.csv, leads_seed.csv (Datablist-style ~100 rows each, documented in README §3). -->
+<!-- Schema: 00_init_schema.sql — stg_customers, stg_leads, crm_contacts_clean, crm_contacts_duplicates, crm_contacts_rejected. -->
 
-### C. Başlangıç Durumu
-<!-- Status: NOT STARTED -->
-<!-- seed import (x2), 01b_make_dirty.sql ile her iki tablonun kirletilmesi, çakışmaların (cross-duplicate) oluşturulması -->
+### C. Initial state
+<!-- Status: DONE -->
+<!-- 01a_import_seed.sql COPY into staging; 01b_make_dirty.sql intentional dirt + cross-source email collision. -->
+<!-- Evidence: README §4 -->
 
-### D. Uygulama
-<!-- Status: NOT STARTED -->
-<!-- 02_etl_process.sql: İki kaynağın UNION ALL ile birleşimi, Customer > Lead önceliği, validation ve INSERT -->
+### D. Implementation
+<!-- Status: DONE -->
+<!-- 02_etl_process.sql: UNION ALL, source_priority, validation (~ regex), ROW_NUMBER dedup, inserts to clean/rejected/duplicates. -->
+<!-- Design decision: PostgreSQL disallows multi-target writes from a single CTE tree → used TEMP tables + single BEGIN/COMMIT (README §9). -->
+<!-- Evidence: sql/02_etl_process.sql, README §5–§6 -->
 
-### E. Sonuç / Kanıt
-<!-- Status: NOT STARTED -->
-<!-- 03_quality_report.sql: Veri kalite analizi (Customer Clean / Lead Clean / Reddedilenler), son ekran görüntüleri -->
+### E. Results / evidence
+<!-- Status: PARTIAL -->
+<!-- DONE: 03_quality_report.sql; README §8 metric table (e.g. 185 clean, 8 suppressed duplicates, 12 rejected). -->
+<!-- OPEN: screenshots/ is empty; capture after video per README §7. -->
 
-### F. Raporlama
-<!-- Status: NOT STARTED -->
-<!-- README.md içinde 10 başlıklı teknik rapor -->
+### F. Reporting
+<!-- Status: DONE -->
+<!-- project-5-etl/README.md — full 10-section report (Turkish, course deliverable). -->
 
 ### G. Video
 <!-- Status: NOT STARTED -->
+<!-- ≥10 min walkthrough of ETL workflow (ROADMAP G). -->
 
 ---
 
-## Proje 1 — Performans (MSSQL) · Vize
+## Project 1 — Performance (MSSQL) · Midterm
 
-### A. Problem Tanımı
+### A. Problem definition
 <!-- Status: NOT STARTED -->
 <!-- Scenario: E-commerce order system (customers, products, orders, order_items). -->
 <!-- 4 bad query patterns to demonstrate: (1) non-sargable date filter, (2) SELECT * + missing covering index, (3) index-less JOIN, (4) unnecessary index write cost. -->
 
-### B. Ortam Kurulumu
+### B. Environment setup
 <!-- Status: NOT STARTED -->
 <!-- azure-sql-edge container (Apple Silicon compatible), spin up via docker-compose.yml. -->
 <!-- 00_schema.sql: customers, products, orders, order_items tables. -->
@@ -78,13 +87,13 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 <!-- Dates spread across 5 years; status/region/category fields with controlled distribution. No pre-built CSV downloads. -->
 <!-- Decision: synthetic data approach chosen. Reason: reproducibility, distribution control, guaranteed performance delta. -->
 
-### C. Başlangıç Durumu
+### C. Initial state
 <!-- Status: NOT STARTED -->
 <!-- 03_baseline_bad_queries.sql: run 4 bad queries with SET STATISTICS IO, TIME ON and record output. -->
 <!-- Capture execution plan screenshots for each query (screenshots/before_*.png). -->
 <!-- Expected: full table scans, high logical reads, high CPU/elapsed time. -->
 
-### D. Uygulama
+### D. Implementation
 <!-- Status: NOT STARTED -->
 <!-- 04_indexes_and_tuning.sql: -->
 <!--   Q1: YEAR(order_date) → sargable range filter + order_date index -->
@@ -94,13 +103,13 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 <!-- 05_after_measurement.sql: re-run same queries post-optimization. -->
 <!-- 06_monitoring_dmv.sql: sys.dm_exec_query_stats, sys.dm_db_index_usage_stats, sys.dm_db_missing_index_details -->
 
-### E. Sonuç / Kanıt
+### E. Results / evidence
 <!-- Status: NOT STARTED -->
 <!-- Before/after comparison table per query: logical reads, CPU time, elapsed time. -->
 <!-- Post-optimization execution plan screenshots (screenshots/after_*.png). -->
 <!-- List of indexes added/removed + short performance summary. -->
 
-### F. Raporlama
+### F. Reporting
 <!-- Status: NOT STARTED -->
 <!-- 10-section technical report inside project-1-performance/README.md. -->
 
@@ -108,59 +117,32 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 <!-- Status: NOT STARTED -->
 <!-- Full walkthrough: environment → baseline → optimization → results, ≥ 10 min. -->
 
-### Ekstra
+### Extra
 <!-- Status: NOT STARTED -->
 <!-- Parameter sniffing: run same SP with different parameters, show cached plan causing poor performance. -->
 <!-- Fix with OPTION (RECOMPILE) or OPTIMIZE FOR. MSSQL-specific topic, differentiates this project. -->
 
 ---
 
-## Proje 2 — Backup/Recovery (PostgreSQL) · Final
+## Project 2 — Backup / recovery (PostgreSQL) · Final
 
-### A. Problem Tanımı
+### A. Problem definition
 <!-- Status: NOT STARTED -->
 
-### B. Ortam Kurulumu
+### B. Environment setup
 <!-- Status: NOT STARTED -->
 
-### C. Başlangıç Durumu
+### C. Initial state
 <!-- Status: NOT STARTED -->
 
-### D. Uygulama
+### D. Implementation
 <!-- Status: NOT STARTED -->
-<!-- Full backup (pg_dump --format=custom), zamanlanmış yedek, restore, PITR -->
+<!-- Full backup (pg_dump --format=custom), scheduled backup workflow, restore, PITR. -->
 
-### E. Sonuç / Kanıt
-<!-- Status: NOT STARTED -->
-
-### F. Raporlama
+### E. Results / evidence
 <!-- Status: NOT STARTED -->
 
-### G. Video
-<!-- Status: NOT STARTED -->
-
----
-
-## Proje 3 — Güvenlik (Oracle) · Final
-
-### A. Problem Tanımı
-<!-- Status: NOT STARTED -->
-
-### B. Ortam Kurulumu
-<!-- Status: NOT STARTED -->
-<!-- Oracle container (gvenzl/oracle-xe, ~8GB+) -->
-
-### C. Başlangıç Durumu
-<!-- Status: NOT STARTED -->
-
-### D. Uygulama
-<!-- Status: NOT STARTED -->
-<!-- Kullanıcı/rol, yetki, masking/encryption, audit -->
-
-### E. Sonuç / Kanıt
-<!-- Status: NOT STARTED -->
-
-### F. Raporlama
+### F. Reporting
 <!-- Status: NOT STARTED -->
 
 ### G. Video
@@ -168,26 +150,53 @@ Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratu
 
 ---
 
-## Proje 4 — Load Balancing (PostgreSQL) · Final
+## Project 3 — Security (Oracle) · Final
 
-### A. Problem Tanımı
+### A. Problem definition
 <!-- Status: NOT STARTED -->
 
-### B. Ortam Kurulumu
+### B. Environment setup
 <!-- Status: NOT STARTED -->
-<!-- Debian server veya multi-container Docker, min 2 PG node -->
+<!-- Oracle container (gvenzl/oracle-xe, ~8GB+). -->
 
-### C. Başlangıç Durumu
-<!-- Status: NOT STARTED -->
-
-### D. Uygulama
-<!-- Status: NOT STARTED -->
-<!-- Streaming replication, failover, read replica -->
-
-### E. Sonuç / Kanıt
+### C. Initial state
 <!-- Status: NOT STARTED -->
 
-### F. Raporlama
+### D. Implementation
+<!-- Status: NOT STARTED -->
+<!-- Users/roles, grants, masking/encryption, audit. -->
+
+### E. Results / evidence
+<!-- Status: NOT STARTED -->
+
+### F. Reporting
+<!-- Status: NOT STARTED -->
+
+### G. Video
+<!-- Status: NOT STARTED -->
+
+---
+
+## Project 4 — Load balancing (PostgreSQL) · Final
+
+### A. Problem definition
+<!-- Status: NOT STARTED -->
+
+### B. Environment setup
+<!-- Status: NOT STARTED -->
+<!-- Debian server or multi-container Docker, minimum 2 PostgreSQL nodes. -->
+
+### C. Initial state
+<!-- Status: NOT STARTED -->
+
+### D. Implementation
+<!-- Status: NOT STARTED -->
+<!-- Streaming replication, failover, read replica. -->
+
+### E. Results / evidence
+<!-- Status: NOT STARTED -->
+
+### F. Reporting
 <!-- Status: NOT STARTED -->
 
 ### G. Video

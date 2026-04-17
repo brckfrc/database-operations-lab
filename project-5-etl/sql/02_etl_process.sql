@@ -1,56 +1,110 @@
 -- 02_etl_process.sql
--- Performs the Extract, Transform, Load (ETL) operation from customers_raw
+-- Multi-Source Extract, Transform, and Load script
 
 BEGIN;
 
--- 1. Insert Valid Records into customers_clean
--- Transformation Rules:
--- a. Deduplication: DISTINCT ON (customer_id)
--- b. Casing: INITCAP first_name, INITCAP last_name
--- c. Validations: Email must contain '@'
-INSERT INTO customers_clean (customer_id, first_name, last_name, company, city, country, phone, email, subscription_date, website)
-SELECT DISTINCT ON (customer_id) 
-    customer_id,
+-- 1. Unify and standardize into a temporary table
+CREATE TEMP TABLE temp_standardized AS
+WITH unified_raw AS (
+    -- Source A: Customers
+    SELECT 
+        'Customer' AS source_system,
+        1 AS source_priority, -- Highest priority
+        customer_id AS source_id,
+        first_name,
+        last_name,
+        company,
+        phone_1 AS phone,
+        email,
+        website,
+        row_to_json(stg_customers)::jsonb AS raw_data
+    FROM stg_customers
+    WHERE customer_id IS NOT NULL
+    
+    UNION ALL
+
+    -- Source B: Leads
+    SELECT 
+        'Lead' AS source_system,
+        2 AS source_priority, -- Lower priority
+        account_id AS source_id,
+        first_name,
+        last_name,
+        company,
+        phone_1 AS phone,
+        email_1 AS email,
+        website,
+        row_to_json(stg_leads)::jsonb AS raw_data
+    FROM stg_leads
+    WHERE account_id IS NOT NULL
+)
+SELECT 
+    source_system,
+    source_priority,
+    source_id,
     INITCAP(TRIM(first_name)) AS first_name,
     INITCAP(TRIM(last_name)) AS last_name,
     company,
-    city,
-    country,
-    -- Simple phone normalization: if it has strange letters, we nullify it, else keep it
-    CASE 
-        WHEN phone_1 ~ '[a-zA-Z]' THEN NULL
-        ELSE TRIM(phone_1)
-    END AS phone,
+    CASE WHEN phone ~ '[a-zA-Z]' THEN NULL ELSE TRIM(phone) END AS phone,
     LOWER(TRIM(email)) AS email,
+    website,
+    raw_data,
     CASE 
-        -- If date is in wrong format (we created an error with dd-mm-yyyy instead of yyyy-mm-dd)
-        WHEN subscription_date ~ '^\d{2}-\d{2}-\d{4}$' THEN TO_DATE(subscription_date, 'DD-MM-YYYY')
-        ELSE CAST(subscription_date AS DATE)
-    END AS subscription_date,
-    website
-FROM customers_raw
-WHERE email LIKE '%@%'
-  AND first_name NOT IN ('Test', 'Invalid')
-  AND last_name NOT IN ('User', 'Data')
-  AND customer_id IS NOT NULL;
+        WHEN LOWER(TRIM(email)) NOT LIKE '%@%' OR email IS NULL THEN FALSE
+        WHEN first_name IN ('Test', 'Invalid') OR last_name IN ('User', 'Data') THEN FALSE
+        ELSE TRUE
+    END AS is_valid_record
+FROM unified_raw;
 
 
--- 2. Insert Invalid Records into customers_rejected
-INSERT INTO customers_rejected (customer_id, raw_data, rejection_reason)
+-- 2. Create another temporary table for valid ranked data
+CREATE TEMP TABLE temp_ranked_valid AS
 SELECT 
-    customer_id,
-    row_to_json(customers_raw)::jsonb AS raw_data,
+    *,
+    ROW_NUMBER() OVER (
+        PARTITION BY email 
+        ORDER BY source_priority ASC, source_id DESC
+    ) AS rn
+FROM temp_standardized
+WHERE is_valid_record = TRUE;
+
+
+-- 3. INSERT INTO TARGET TABLES
+
+-- A. Load Clean Targets (rn = 1)
+INSERT INTO crm_contacts_clean (source_system, source_id, first_name, last_name, company, phone, email, website)
+SELECT source_system, source_id, first_name, last_name, company, phone, email, website
+FROM temp_ranked_valid
+WHERE rn = 1;
+
+-- B. Load Suppressed Target (rn > 1) (e.g. Leads that had to yield to Customers)
+INSERT INTO crm_contacts_duplicates (suppressed_source_system, suppressed_source_id, winning_source_system, normalized_email, raw_data)
+SELECT 
+    d.source_system, 
+    d.source_id, 
+    w.source_system, 
+    d.email, 
+    d.raw_data
+FROM temp_ranked_valid d
+JOIN temp_ranked_valid w ON d.email = w.email AND w.rn = 1
+WHERE d.rn > 1;
+
+-- C. Load Rejected Targets (is_valid_record = FALSE)
+INSERT INTO crm_contacts_rejected (source_system, source_id, raw_data, rejection_reason)
+SELECT 
+    source_system, 
+    source_id, 
+    raw_data,
     CASE
         WHEN email NOT LIKE '%@%' OR email IS NULL THEN 'Missing or invalid email format'
         WHEN first_name IN ('Test', 'Invalid') OR last_name IN ('User', 'Data') THEN 'Fake/Test data detected'
-        WHEN customer_id IS NULL THEN 'Missing Primary Identifier'
-        ELSE 'Other data quality issue'
-    END AS rejection_reason
-FROM customers_raw
-WHERE email NOT LIKE '%@%' 
-   OR email IS NULL 
-   OR first_name IN ('Test', 'Invalid')
-   OR last_name IN ('User', 'Data')
-   OR customer_id IS NULL;
+        ELSE 'Other issue'
+    END
+FROM temp_standardized
+WHERE is_valid_record = FALSE;
+
+-- Cleanup temp tables
+DROP TABLE temp_standardized;
+DROP TABLE temp_ranked_valid;
 
 COMMIT;

@@ -1,9 +1,8 @@
-# BLM4522 — Veritabanı İşlemleri Laboratuvarı · Yol Haritası
+# BLM4522 — Ağ Tabanlı Paralel Dağıtım Sistemleri · Yol Haritası
 
-> Bu doküman, ders kapsamındaki 5 projeyi **iş bazında** takip etmek için kullanılır.
+> Bu doküman, ders kapsamındaki 5 projeyi iş bazında takip etmek için kullanılır.
 > Her proje kendi bölümünde tanım, checklist ve teslim çıktılarıyla yer alır.
-> Orijinal plan: [`docs/BLM4522_Proje_Roadmap.pdf`](BLM4522_Proje_Roadmap.pdf)
-> Teknik detaylar ve geliştirme günlüğü için → [`docs/PROGRESS.md`](PROGRESS.md) *(İngilizce; dil ayrımı [`docs/AGENTS.md`](AGENTS.md) içinde)*
+> Teknik detaylar ve geliştirme günlüğü için → [`docs/PROGRESS.md`](PROGRESS.md) 
 
 ---
 

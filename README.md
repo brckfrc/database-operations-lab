@@ -1,4 +1,4 @@
-# Database operations lab
+# Database Operations Lab
 
 **BLM4522 - Ağ Tabanlı Paralel Dağıtım Sistemleri**
 

@@ -1,6 +1,6 @@
 # Progress Log
 
-Detailed development tracking for **BLM4522 — Veritabanı İşlemleri Laboratuvarı**. This is the living document for recording what was done, decisions made, blockers encountered, and anything noteworthy during each work item.
+Detailed development tracking for this repo. This is the living document for recording what was done, decisions made, blockers encountered, and anything noteworthy during each work item.
 
 `../ROADMAP.md` is the instructor-facing checklist: items toggle `[x]` only when the milestone is genuinely met with evidence (screenshots, SQL output, before/after proof). Do **not** mark items `[x]` based on placeholder or mock work. This file (`PROGRESS.md`) is the **technical dev log** for implementation detail.
 

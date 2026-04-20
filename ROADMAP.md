@@ -127,10 +127,10 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[ ]` Gösterilecek 4 kötü sorgu patternini belirle: (1) non-sargable date filter, (2) SELECT * + eksik covering index, (3) indekssiz JOIN, (4) gereksiz indeksin INSERT maliyeti.
 
 **B. Ortam Kurulumu**
-- `[ ]` MSSQL container'ı kur — `docker-compose.yml` ile `azure-sql-edge` (Apple Silicon uyumlu).
-- `[ ]` `sql/00_schema.sql` ile veritabanı ve tablo yapısını oluştur (`customers`, `products`, `orders`, `order_items`).
-- `[ ]` `sql/01_seed_lookup.sql` ile küçük lookup tablosunu (`products` — ~20K) doldur.
-- `[ ]` `sql/02_seed_large_data.sql` ile büyük tabloları T-SQL loop / `INSERT … SELECT` ile sentetik üret (`customers` ~100K, `orders` ~500K–1M, `order_items` ~1–2M). Tarihler 5 yıla yayılacak, status/region/category alanları kontrollü dağılımda.
+- `[x]` MSSQL container'ı kur — `docker-compose.yml` ile `azure-sql-edge` (Apple Silicon uyumlu). (Not: `2022-latest` x86 emulator kullanıldı)
+- `[x]` `sql/00_schema.sql` ile veritabanı ve tablo yapısını oluştur (`customers`, `products`, `orders`, `order_items`).
+- `[x]` `sql/01_seed_lookup.sql` ile küçük lookup tablosunu (`products` — ~20K) doldur.
+- `[x]` `sql/02_seed_large_data.sql` ile büyük tabloları T-SQL loop / `INSERT … SELECT` ile sentetik üret (`customers` ~100K, `orders` ~500K–1M, `order_items` ~1–2M). Tarihler 5 yıla yayılacak, status/region/category alanları kontrollü dağılımda.
 
 **C. Başlangıç Durumu**
 - `[ ]` `sql/03_baseline_bad_queries.sql` ile 4 kötü sorguyu `SET STATISTICS IO, TIME ON` açık şekilde çalıştır ve çıktıları kaydet.

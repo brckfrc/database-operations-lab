@@ -79,12 +79,11 @@ Detailed development tracking for this repo. This is the living document for rec
 <!-- 4 bad query patterns to demonstrate: (1) non-sargable date filter, (2) SELECT * + missing covering index, (3) index-less JOIN, (4) unnecessary index write cost. -->
 
 ### B. Environment setup
-<!-- Status: NOT STARTED -->
-<!-- azure-sql-edge container (Apple Silicon compatible), spin up via docker-compose.yml. -->
-<!-- 00_schema.sql: customers, products, orders, order_items tables. -->
-<!-- 01_seed_lookup.sql: products ~20K rows. -->
-<!-- 02_seed_large_data.sql: synthetic generation via T-SQL — customers ~100K, orders ~500K–1M, order_items ~1–2M. -->
-<!-- Dates spread across 5 years; status/region/category fields with controlled distribution. No pre-built CSV downloads. -->
+<!-- Status: DONE (2026-04) -->
+<!-- mssql-server 2022-latest container running on macOS with amd64 architecture via docker-compose.yml. -->
+<!-- 00_schema.sql executed: customers, products, orders, order_items tables created. -->
+<!-- 01_seed_lookup.sql executed: inserted 20k rows into products. -->
+<!-- 02_seed_large_data.sql executed: inserted 100k customers, 500k orders, 1m order_items using cross join tally tables. -->
 <!-- Decision: synthetic data approach chosen. Reason: reproducibility, distribution control, guaranteed performance delta. -->
 
 ### C. Initial state

@@ -111,9 +111,10 @@ Detailed development tracking for this repo. This is the living document for rec
 <!-- Full walkthrough: environment → baseline → optimization → results, ≥ 10 min. -->
 
 ### Extra
-<!-- Status: NOT STARTED -->
-<!-- Parameter sniffing: run same SP with different parameters, show cached plan causing poor performance. -->
-<!-- Fix with OPTION (RECOMPILE) or OPTIMIZE FOR. MSSQL-specific topic, differentiates this project. -->
+<!-- Status: DONE (2026-04) -->
+<!-- Parameter sniffing scenario added via 07_parameter_sniffing.sql. -->
+<!-- Created data skew on orders.priority column. -->
+<!-- Demonstrated bad plan caching vs OPTION (RECOMPILE) fix. -->
 
 ---
 

@@ -158,7 +158,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 #### Ekstra
 
-- `[ ]` **Parameter sniffing senaryosu:** Aynı stored procedure'ü farklı parametrelerle çalıştırıp cached plan'ın kötü performansa neden olduğunu göster. `OPTION (RECOMPILE)` veya `OPTIMIZE FOR` ile düzelt. MSSQL'e özgü bir konu olduğu için projeyi diğerlerinden ayırır.
+- `[x]` **Parameter sniffing senaryosu:** Aynı stored procedure'ü farklı parametrelerle çalıştırıp cached plan'ın kötü performansa neden olduğunu göster. `OPTION (RECOMPILE)` veya `OPTIMIZE FOR` ile düzelt. MSSQL'e özgü bir konu olduğu için projeyi diğerlerinden ayırır.
 
 ---
 

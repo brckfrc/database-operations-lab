@@ -87,30 +87,24 @@ Detailed development tracking for this repo. This is the living document for rec
 <!-- Decision: synthetic data approach chosen. Reason: reproducibility, distribution control, guaranteed performance delta. -->
 
 ### C. Initial state
-<!-- Status: NOT STARTED -->
-<!-- 03_baseline_bad_queries.sql: run 4 bad queries with SET STATISTICS IO, TIME ON and record output. -->
-<!-- Capture execution plan screenshots for each query (screenshots/before_*.png). -->
-<!-- Expected: full table scans, high logical reads, high CPU/elapsed time. -->
+<!-- Status: DONE (2026-04) -->
+<!-- 03_baseline_bad_queries.sql executed with 4 bad query patterns. -->
+<!-- Baseline execution plans visually captured via DBeaver into screenshots/before_q1-q4.png -->
 
 ### D. Implementation
-<!-- Status: NOT STARTED -->
-<!-- 04_indexes_and_tuning.sql: -->
-<!--   Q1: YEAR(order_date) → sargable range filter + order_date index -->
-<!--   Q2: SELECT * → narrow column list + covering index -->
-<!--   Q3: index-less join → proper indexes on join columns -->
-<!--   Q4: add unnecessary index → INSERT benchmark to show write cost, then drop -->
-<!-- 05_after_measurement.sql: re-run same queries post-optimization. -->
-<!-- 06_monitoring_dmv.sql: sys.dm_exec_query_stats, sys.dm_db_index_usage_stats, sys.dm_db_missing_index_details -->
+<!-- Status: DONE (2026-04) -->
+<!-- 04_indexes_and_tuning.sql executed: adding Non-Clustered index for date, Covering index, FK indices, and dropping the bad index on orders. -->
+<!-- 05_after_measurement.sql executed to capture optimized results. -->
+<!-- 06_monitoring_dmv.sql added to monitor sys.dm_exec_query_stats and missing indices dynamically. -->
 
 ### E. Results / evidence
-<!-- Status: NOT STARTED -->
-<!-- Before/after comparison table per query: logical reads, CPU time, elapsed time. -->
-<!-- Post-optimization execution plan screenshots (screenshots/after_*.png). -->
-<!-- List of indexes added/removed + short performance summary. -->
+<!-- Status: DONE (2026-04) -->
+<!-- Captured post-optimization execution plans in screenshots/after_q1-q4.png showing Table Scans replaced with Index Seeks. -->
+<!-- Captured highly reduced logical reads from terminal outputs. -->
 
 ### F. Reporting
-<!-- Status: NOT STARTED -->
-<!-- 10-section technical report inside project-1-performance/README.md. -->
+<!-- Status: DONE (2026-04) -->
+<!-- Created comprehensive 10-section project-1-performance/README.md containing technical performance comparisons. -->
 
 ### G. Video
 <!-- Status: NOT STARTED -->

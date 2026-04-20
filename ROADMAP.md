@@ -133,25 +133,25 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` `sql/02_seed_large_data.sql` ile büyük tabloları T-SQL loop / `INSERT … SELECT` ile sentetik üret (`customers` ~100K, `orders` ~500K–1M, `order_items` ~1–2M). Tarihler 5 yıla yayılacak, status/region/category alanları kontrollü dağılımda.
 
 **C. Başlangıç Durumu**
-- `[ ]` `sql/03_baseline_bad_queries.sql` ile 4 kötü sorguyu `SET STATISTICS IO, TIME ON` açık şekilde çalıştır ve çıktıları kaydet.
-- `[ ]` Her kötü sorgu için execution plan ekran görüntüsü al (`screenshots/before_*.png`).
+- `[x]` `sql/03_baseline_bad_queries.sql` ile 4 kötü sorguyu `SET STATISTICS IO, TIME ON` açık şekilde çalıştır ve çıktıları kaydet.
+- `[x]` Her kötü sorgu için execution plan ekran görüntüsü al (`screenshots/before_*.png`).
 
 **D. Uygulama**
-- `[ ]` `sql/04_indexes_and_tuning.sql` ile iyileştirmeleri uygula:
+- `[x]` `sql/04_indexes_and_tuning.sql` ile iyileştirmeleri uygula:
   - Sorgu 1: `WHERE YEAR(order_date) = 2024` → sargable range filtre + `order_date` indeksi.
   - Sorgu 2: `SELECT *` → dar kolon seçimi + covering index.
   - Sorgu 3: `orders ⟕ customers` indekssiz → JOIN kolonlarına uygun indeks.
   - Sorgu 4: Gereksiz indeks ekle → INSERT benchmark ile yazma maliyetini göster, sonra indeksi kaldır.
-- `[ ]` `sql/05_after_measurement.sql` ile aynı sorguları optimizasyon sonrası tekrar çalıştır.
-- `[ ]` `sql/06_monitoring_dmv.sql` ile DMV sorguları yaz: `sys.dm_exec_query_stats`, `sys.dm_db_index_usage_stats`, `sys.dm_db_missing_index_details`.
+- `[x]` `sql/05_after_measurement.sql` ile aynı sorguları optimizasyon sonrası tekrar çalıştır.
+- `[x]` `sql/06_monitoring_dmv.sql` ile DMV sorguları yaz: `sys.dm_exec_query_stats`, `sys.dm_db_index_usage_stats`, `sys.dm_db_missing_index_details`.
 
 **E. Sonuç / Kanıt**
-- `[ ]` Her sorgu için önce-sonra logical reads / CPU time / elapsed time karşılaştırma tablosu oluştur.
-- `[ ]` Optimizasyon sonrası execution plan ekran görüntülerini al (`screenshots/after_*.png`).
-- `[ ]` Kullanılan / kaldırılan indeks listesi ve kısa performans özeti.
+- `[x]` Her sorgu için önce-sonra logical reads / CPU time / elapsed time karşılaştırma tablosu oluştur.
+- `[x]` Optimizasyon sonrası execution plan ekran görüntülerini al (`screenshots/after_*.png`).
+- `[x]` Kullanılan / kaldırılan indeks listesi ve kısa performans özeti.
 
 **F. Raporlama**
-- `[ ]` `project-1-performance/README.md` altında 10 başlıklı proje raporunu yaz.
+- `[x]` `project-1-performance/README.md` altında 10 başlıklı proje raporunu yaz.
 
 **G. Video**
 - `[ ]` Tüm akışı (ortam → baseline → optimizasyon → sonuç) adım adım anlatan ≥ 10 dk video çek.

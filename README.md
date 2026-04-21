@@ -4,21 +4,19 @@
 
 📄 **[Midterm Submission Report (PDF)](docs/school/21290270_Vize.pdf)**
 
-This repository holds coursework for five independent database lab projects. Each project targets a fixed DBMS (MSSQL, PostgreSQL, or Oracle), with numbered SQL, evidence (screenshots, metrics), a per-project README report, and a demo video where required.
+This repository contains 5 independent database lab projects (MSSQL, PostgreSQL, Oracle). 
 
-## Instructor and grading: start with `ROADMAP.md`
-
-**[`ROADMAP.md`](ROADMAP.md)** is the **primary instructor-facing tracking document**. It lists official checklists (problem → environment → baseline → work → evidence → report → video), the overview status table, and the link to the course roadmap PDF. Checkboxes mean **verified** work only—back them with artifacts (SQL output, screenshots, before/after proof), not placeholders.
+🏆 **For Evaluation:** Please review **[`ROADMAP.md`](ROADMAP.md)**, which serves as the primary tracking document with official checklists, reports, and status overviews.
 
 ### Projects (planned layout)
 
-| # | Focus | DBMS | Directory (see [`docs/AGENTS.md`](docs/AGENTS.md)) |
-|---|--------|------|------------------------------------------------------|
-| 1 | Performance & monitoring | MSSQL | [`project-1-performance/`](project-1-performance/) *(Video: [YouTube](https://youtu.be/CvUFwSyqpq8))* |
-| 2 | Backup & recovery | PostgreSQL | `project-2-backup-recovery/` |
-| 3 | Security & access control | Oracle | `project-3-security/` |
-| 4 | Load balancing & distributed setup | PostgreSQL | `project-4-load-balancing/` |
-| 5 | Data cleaning & ETL | PostgreSQL | [`project-5-etl/`](project-5-etl/) *(Video: [YouTube](https://youtu.be/DbLzWvbev1g))* |
+| # | Focus | DBMS | Term | Directory | Video |
+|---|-------|------|------|-----------|-------|
+| 1 | Performance & monitoring | MSSQL | **Midterm** | [`project-1-performance/`](project-1-performance/) | [YouTube](https://youtu.be/CvUFwSyqpq8) |
+| 5 | Data cleaning & ETL | PostgreSQL | **Midterm** | [`project-5-etl/`](project-5-etl/) | [YouTube](https://youtu.be/DbLzWvbev1g) |
+| 2 | Backup & recovery | PostgreSQL | Final | `project-2-backup-recovery/` | - |
+| 3 | Security & access control | Oracle | Final | `project-3-security/` | - |
+| 4 | Load balancing & distributed setup | PostgreSQL | Final | `project-4-load-balancing/` | - |
 
 ### Repository map
 

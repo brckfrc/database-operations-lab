@@ -34,6 +34,7 @@ Projedeki tüm kodlar `sql/` klasörü altındadır:
 - `05_after_measurement.sql`: Rafine edilmiş `SELECT` sorguları.
 - `06_monitoring_dmv.sql`: Veritabanı içinde boşa dönen veya eksik olan indeksleri raporlayan DMV sorguları.
 - `07_parameter_sniffing.sql`: Stored Procedure plan önbellekleme hatasının (Parameter Sniffing) ispatı ve çözümü.
+- `08_security_roles.sql`: Salt-okunur (Read-Only) rolünün oluşturulması ve izinsiz yazma/silme işlemlerinin `DENY` ile engellenmesi.
 
 ## 7. Ekran Görüntüleri
 Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek farkları) `screenshots/` dizinindedir. Sırasıyla `before_qX.png` (Kırmızı/Sarı Uyarılar, kalın oklar) ve `after_qX.png` (İnce oklar, yeşil ikonlar) olarak incelenebilir.
@@ -42,10 +43,10 @@ Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek far
 
 | Senaryo | Sorun | Öncesi (Baseline) | Sonrası (Optimized) | Kazanç |
 |---------|-------|-------------------|---------------------|--------|
-| **Sorgu 1** | Non-Sargable Filtre | ~3039 Logical Read (Table Scan) | ~3369 Read. (Fakat Seek planına düştü, okuma süreleri milisaniyeye geriledi). | Index Seek Elde Edildi |
-| **Sorgu 2** | `SELECT *` | Belirsiz Memory Tüketimi | Sadece belirlenen kolonlar için RAM tüketimi. | Covering Index Çalıştı |
+| **Sorgu 1** | Non-Sargable Filtre | 3039 Logical Read (Table Scan - 48 ms) | 3 Logical Read (Index Seek - 1 ms). | Kesin Index Seek ve 48x Hızlanma |
+| **Sorgu 2** | `SELECT *` | Belirsiz Memory Tüketimi (Key Lookup) | Sadece belirlenen kolonlar için düşük RAM tüketimi. | Covering Index Çalıştı |
 | **Sorgu 3** | Eksik JOIN İndeksi | Devasa Nested Loop Scan | Hızlı Hash Match / Nested Loop Seek | Katlanarak Hızlanma |
-| **Sorgu 4** | Cezalandırıcı İndeks (Insert) | 50.000 satır insert işleminde CPU tavan! | İndeks silindikten sonra aynı işlem CPU'yu yormadan bitti. | Yazma (I/O) yükü azaldı |
+| **Sorgu 4** | Cezalandırıcı İndeks (Insert) | 50.000 satır insert işleminde CPU tavan! | İndeks silindikten sonra aynı işlem CPU'yi yormadan bitti. | Yazma (I/O) yükü azaldı |
 | **Sorgu 5 (Extra)** | Parameter Sniffing | Stored Procedure yanlış parametre planını Cache'leyerek kilitlendi. | `OPTION (RECOMPILE)` komutu kullanılarak her parametreye özel plan çizmesi sağlandı. | Cache (Önbellek) Hatası Giderildi |
 
 ## 9. Karşılaşılan Problemler ve Çözümleri

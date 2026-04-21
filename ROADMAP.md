@@ -3,6 +3,7 @@
 > Bu doküman, ders kapsamındaki 5 projeyi iş bazında takip etmek için kullanılır.
 > Her proje kendi bölümünde tanım, checklist ve teslim çıktılarıyla yer alır.
 > Teknik detaylar ve geliştirme günlüğü için → [`docs/PROGRESS.md`](PROGRESS.md) 
+> 📄 **[Vize Teslim Raporu (PDF)](docs/school/21290270_Vize.pdf)**
 
 ---
 
@@ -10,11 +11,11 @@
 
 | # | Proje | DBMS | Dönem | Durum |
 |---|-------|------|-------|-------|
-| 1 | Performans Optimizasyonu ve İzleme | MSSQL | Vize | `[ ]` |
+| 1 | Performans Optimizasyonu ve İzleme | MSSQL | Vize | Tamamlandı `[x]` |
 | 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | `[ ]` |
 | 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | `[ ]` |
 | 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | `[ ]` |
-| 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | Kısmi *(ETL + rapor tamam; video ve `screenshots/` bekleniyor)* |
+| 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | Tamamlandı `[x]` |
 
 ### Debian Sunucu İhtiyacı
 
@@ -58,11 +59,11 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ## Ortak Altyapı
 
-- `[ ]` Repo klasör yapısını oluştur (`project-1-performance/` … `project-5-etl/`)
-- `[ ]` Her proje klasöründe `sql/`, `report/`, `screenshots/`, `README.md` iskeletini kur
-- `[ ]` Docker ortamını hazırla (PostgreSQL, MSSQL, Oracle container'ları)
-- `[ ]` Ortak rapor şablonunu oluştur (aşağıdaki 10 başlıklı format)
-- `[ ]` `.gitignore` düzenle
+- `[x]` Repo klasör yapısını oluştur (`project-1-performance/` … `project-5-etl/`)
+- `[x]` Her proje klasöründe `sql/`, `report/`, `screenshots/`, `README.md` iskeletini kur
+- `[x]` Docker ortamını hazırla (PostgreSQL, MSSQL, Oracle container'ları)
+- `[x]` Ortak rapor şablonunu oluştur (aşağıdaki 10 başlıklı format)
+- `[x]` `.gitignore` düzenle
 
 ---
 
@@ -123,8 +124,8 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` E-ticaret sipariş senaryosunu tanımla: müşteriler sipariş verir, siparişler kalem bazında ürün içerir.
-- `[ ]` Gösterilecek 4 kötü sorgu patternini belirle: (1) non-sargable date filter, (2) SELECT * + eksik covering index, (3) indekssiz JOIN, (4) gereksiz indeksin INSERT maliyeti.
+- `[x]` E-ticaret sipariş senaryosunu tanımla: müşteriler sipariş verir, siparişler kalem bazında ürün içerir.
+- `[x]` Gösterilecek 4 kötü sorgu patternini belirle: (1) non-sargable date filter, (2) SELECT * + eksik covering index, (3) indekssiz JOIN, (4) gereksiz indeksin INSERT maliyeti.
 
 **B. Ortam Kurulumu**
 - `[x]` MSSQL container'ı kur — `docker-compose.yml` ile `azure-sql-edge` (Apple Silicon uyumlu). (Not: `2022-latest` x86 emulator kullanıldı)

@@ -96,6 +96,7 @@ Detailed development tracking for this repo. This is the living document for rec
 <!-- 04_indexes_and_tuning.sql executed: adding Non-Clustered index for date, Covering index, FK indices, and dropping the bad index on orders. -->
 <!-- 05_after_measurement.sql executed to capture optimized results. -->
 <!-- 06_monitoring_dmv.sql added to monitor sys.dm_exec_query_stats and missing indices dynamically. -->
+<!-- 08_security_roles.sql added to demonstrate role-based access control with explicit GRANT/DENY. -->
 
 ### E. Results / evidence
 <!-- Status: DONE (2026-04) -->

@@ -2,6 +2,8 @@
 
 **BLM4522 - Ağ Tabanlı Paralel Dağıtım Sistemleri**
 
+📄 **[Midterm Submission Report (PDF)](docs/school/21290270_Vize.pdf)**
+
 This repository holds coursework for five independent database lab projects. Each project targets a fixed DBMS (MSSQL, PostgreSQL, or Oracle), with numbered SQL, evidence (screenshots, metrics), a per-project README report, and a demo video where required.
 
 ## Instructor and grading: start with `ROADMAP.md`

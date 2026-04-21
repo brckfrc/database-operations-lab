@@ -55,5 +55,4 @@ Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek far
 ## 10. Sonuç ve Değerlendirme
 Veritabanı optimizasyonunun sadece "iyi donanım" ile değil, öncelikle "iyi tasarım (Indexing)" ile başarıldığı kanıtlanmıştır. Sorguyu yazan geliştiricinin attığı ufacık bir `YEAR()` fonksiyonu veya bir `SELECT *` alışkanlığının, 1 milyon satırlık bir tabloda veritabanı motorunu nasıl çaresiz bıraktığı açıkça görülmüştür.
 
----
-**Video Sunumu:** *(Video yüklendiğinde buraya link eklenecektir)*
+

@@ -104,7 +104,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` `project-5-etl/README.md` altında 10 başlıklı proje raporunu yaz.
 
 **G. Video**
-- `[ ]` ETL workflow'unu adım adım anlatan ≥ 10 dk video çek.
+- `[x]` ETL workflow'unu adım adım anlatan ≥ 10 dk video çekildi. **[Video Linki (YouTube)](https://youtu.be/DbLzWvbev1g)**
 
 ---
 
@@ -154,7 +154,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` `project-1-performance/README.md` altında 10 başlıklı proje raporunu yaz.
 
 **G. Video**
-- `[ ]` Tüm akışı (ortam → baseline → optimizasyon → sonuç) adım adım anlatan ≥ 10 dk video çek.
+- `[x]` Tüm akışı (ortam → baseline → optimizasyon → sonuç) adım adım anlatan ≥ 10 dk video çekildi. **[Video Linki (YouTube)](https://youtu.be/CvUFwSyqpq8)**
 
 #### Ekstra
 

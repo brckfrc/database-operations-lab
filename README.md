@@ -8,10 +8,17 @@ This repository holds coursework for five independent database lab projects. Eac
 
 **[`ROADMAP.md`](ROADMAP.md)** is the **primary instructor-facing tracking document**. It lists official checklists (problem → environment → baseline → work → evidence → report → video), the overview status table, and the link to the course roadmap PDF. Checkboxes mean **verified** work only—back them with artifacts (SQL output, screenshots, before/after proof), not placeholders.
 
-- **ROADMAP** language: **Turkish** (submission and grading alignment).
-- **Implementation log:** [`docs/PROGRESS.md`](docs/PROGRESS.md) in **English** (technical decisions and evidence pointers).
+### Projects (planned layout)
 
-## Repository map
+| # | Focus | DBMS | Directory (see [`docs/AGENTS.md`](docs/AGENTS.md)) |
+|---|--------|------|------------------------------------------------------|
+| 1 | Performance & monitoring | MSSQL | [`project-1-performance/`](project-1-performance/) *(Video: [YouTube](https://youtu.be/CvUFwSyqpq8))* |
+| 2 | Backup & recovery | PostgreSQL | `project-2-backup-recovery/` |
+| 3 | Security & access control | Oracle | `project-3-security/` |
+| 4 | Load balancing & distributed setup | PostgreSQL | `project-4-load-balancing/` |
+| 5 | Data cleaning & ETL | PostgreSQL | [`project-5-etl/`](project-5-etl/) *(Video: [YouTube](https://youtu.be/DbLzWvbev1g))* |
+
+### Repository map
 
 | Path | Role |
 |------|------|
@@ -20,16 +27,6 @@ This repository holds coursework for five independent database lab projects. Eac
 | [`docs/PROGRESS.md`](docs/PROGRESS.md) | Technical dev log (English) |
 | [`docs/REVIEW_GUIDE.md`](docs/REVIEW_GUIDE.md) | Optional optimization & security audit prompt |
 | `project-*-*/` | Per project: `sql/`, `report/`, `screenshots/`, `README.md` |
-
-## Projects (planned layout)
-
-| # | Focus | DBMS | Directory (see [`docs/AGENTS.md`](docs/AGENTS.md)) |
-|---|--------|------|------------------------------------------------------|
-| 1 | Performance & monitoring | MSSQL | `project-1-performance/` *(scaffold TBD)* |
-| 2 | Backup & recovery | PostgreSQL | `project-2-backup-recovery/` |
-| 3 | Security & access control | Oracle | `project-3-security/` |
-| 4 | Load balancing & distributed setup | PostgreSQL | `project-4-load-balancing/` |
-| 5 | Data cleaning & ETL | PostgreSQL | [`project-5-etl/`](project-5-etl/) |
 
 Only **`project-5-etl/`** exists in the repo so far; other folders will be added as work continues. Each active project keeps its course report (and eventually video link) in its own **README**—see [`project-5-etl/README.md`](project-5-etl/README.md).
 

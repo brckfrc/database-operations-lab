@@ -122,23 +122,27 @@ Detailed development tracking for this repo. This is the living document for rec
 ## Project 2 — Backup / recovery (PostgreSQL) · Final
 
 ### A. Problem definition
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE -->
+<!-- Bank transactions db requiring pgbackrest for PITR due to pg_dump limitations -->
 
 ### B. Environment setup
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE -->
+<!-- Docker-compose with pg-primary running cron daemon and pgbackrest, pg-restore-test for restores. Scripts: 00_init_schema.sql -->
 
 ### C. Initial state
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE -->
+<!-- Demonstrated pg_dump limitations using 02_baseline_pg_dump.sql -->
 
 ### D. Implementation
-<!-- Status: NOT STARTED -->
-<!-- Full backup (pg_dump --format=custom), scheduled backup workflow, restore, PITR. -->
+<!-- Status: DONE -->
+<!-- Setup pgbackrest stanza, full, diff, incr backup bash scripts, cron jobs setup via entrypoint, PITR recovery scripts using WAL archiving -->
 
 ### E. Results / evidence
-<!-- Status: NOT STARTED -->
+<!-- Status: PARTIAL -->
+<!-- Disasters A and B recovered with PITR and verified via 05_verify_backup.sh script matching row counts. Waiting for screenshots. -->
 
 ### F. Reporting
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE -->
 
 ### G. Video
 <!-- Status: NOT STARTED -->

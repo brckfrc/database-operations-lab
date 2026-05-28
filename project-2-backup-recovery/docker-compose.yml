@@ -1,0 +1,39 @@
+services:
+  pg-primary:
+    build: .
+    container_name: pg-primary
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: bankdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - pgbackrest-repo:/var/lib/pgbackrest
+      - pgarchive:/var/lib/postgresql/archive
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./config/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf:ro
+      - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
+    ports:
+      - "5432:5432"
+
+  pg-restore-test:
+    build: .
+    container_name: pg-restore-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata-restore:/var/lib/postgresql/data
+      - pgbackrest-repo:/var/lib/pgbackrest:ro
+      - pgarchive:/var/lib/postgresql/archive:ro
+      - ./config/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf:ro
+    # Intentionally not exposing port 5432 to host to avoid conflicts
+    # Or just don't run it simultaneously if not needed
+
+volumes:
+  pgdata:
+  pgdata-restore:
+  pgbackrest-repo:
+  pgarchive:

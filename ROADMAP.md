@@ -176,29 +176,29 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` Proje amacını ve gösterilecek sorunları netleştir
+- `[x]` Proje amacını ve gösterilecek sorunları netleştir
 
 **B. Ortam Kurulumu**
-- `[ ]` PostgreSQL container kur
-- `[ ]` Veritabanı oluştur ve örnek veri yükle
+- `[x]` PostgreSQL container kur
+- `[x]` Veritabanı oluştur ve örnek veri yükle
 
 **C. Başlangıç Durumu**
-- `[ ]` Manuel backup yetersizliğini göster
+- `[x]` Manuel backup yetersizliğini göster
 
 **D. Uygulama**
-- `[ ]` Tam yedek (full backup) al — `pg_dump --format=custom`
-- `[ ]` Zamanlanmış yedek mantığı kur
-- `[ ]` Veri silme senaryosu oluştur
-- `[ ]` Silinen veriyi geri getir (restore)
-- `[ ]` Farklı restore denemeleri
-- `[ ]` Point-in-time recovery mantığını açıkla / uygula
+- `[x]` Tam yedek (full backup) al — `pg_dump --format=custom` (pgbackrest kullanıldı)
+- `[x]` Zamanlanmış yedek mantığı kur
+- `[x]` Veri silme senaryosu oluştur
+- `[x]` Silinen veriyi geri getir (restore)
+- `[x]` Farklı restore denemeleri
+- `[x]` Point-in-time recovery mantığını açıkla / uygula
 
 **E. Sonuç / Kanıt**
-- `[ ]` Backup dosyaları ve restore sonrası bütünlük kanıtı
+- `[x]` Backup dosyaları ve restore sonrası bütünlük kanıtı
 - `[ ]` Senaryo bazlı kurtarma ekran görüntüleri
 
 **F. Raporlama**
-- `[ ]` 10 başlıklı teknik rapor yaz
+- `[x]` 10 başlıklı teknik rapor yaz
 
 **G. Video**
 - `[ ]` ≥ 10 dk video çek

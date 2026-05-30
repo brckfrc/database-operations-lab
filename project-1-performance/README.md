@@ -1,5 +1,16 @@
 # Proje 1: Veritabanı Performans Optimizasyonu ve İzleme
 
+## Hızlı Başlangıç
+
+```bash
+cd project-1-performance
+docker compose up -d
+```
+
+Ardından MSSQL CLI ile veya DBeaver üzerinden bağlanarak `sql/` klasöründeki scriptleri başındaki numaraya göre (`00_schema.sql` dosyasından başlayarak) sırayla çalıştırıp optimizasyon testlerini bizzat gözlemleyebilirsiniz.
+
+---
+
 ## 1. Projenin Amacı
 Bu projenin temel amacı, büyük veri kümeleri (milyonlarca satır) üzerinde çalışan bir ilişkisel veritabanında, kötü tasarlanmış mimarinin ve yanlış yazılmış SQL sorgularının sisteme ne kadar büyük bir yük bindirdiğini ("Logical Reads", "CPU Time", "Table Scan" gibi metriklerle) kanıtlamaktır. Ardından, indeksleme stratejileri (Non-Clustered, Covering Index, Foreign Key Index) ve sorgu iyileştirmeleri (Sargable filtreleme) uygulayarak bu yükün nasıl büyük ölçüde düşürüldüğü (Optimizasyon) gösterilmiştir.
 

@@ -15,7 +15,7 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 | 1 | Performance & monitoring | MSSQL | **Midterm** | [`project-1-performance/`](project-1-performance/) | [YouTube](https://youtu.be/CvUFwSyqpq8) |
 | 5 | Data cleaning & ETL | PostgreSQL | **Midterm** | [`project-5-etl/`](project-5-etl/) | [YouTube](https://youtu.be/DbLzWvbev1g) |
 | 2 | Backup & recovery | PostgreSQL | Final | [`project-2-backup-recovery/`](project-2-backup-recovery/) | - |
-| 3 | Security & access control | Oracle | Final | `project-3-security/` | - |
+| 3 | Security & access control | Oracle | Final | [`project-3-security/`](project-3-security/) | - |
 | 4 | Load balancing & distributed setup | PostgreSQL | Final | `project-4-load-balancing/` | - |
 
 ### Repository map
@@ -28,7 +28,7 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 | [`docs/REVIEW_GUIDE.md`](docs/REVIEW_GUIDE.md) | Optional optimization & security audit prompt |
 | `project-*-*/` | Per project: `sql/`, `report/`, `screenshots/`, `README.md` |
 
-Projects 1, 2, and 5 are currently active and completed. Each active project keeps its comprehensive course report, setup instructions, and video links in its own **README** (e.g. [`project-1-performance/README.md`](project-1-performance/README.md)).
+Each project keeps its comprehensive course report, setup instructions, and video links in its own **README** (e.g. [`project-1-performance/README.md`](project-1-performance/README.md)).
 
 ## Quick start
 

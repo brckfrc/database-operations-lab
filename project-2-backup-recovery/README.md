@@ -1,4 +1,16 @@
-# Proje 2: Veritabanı Yedekleme ve Felaketten Kurtarma (PostgreSQL)
+# Proje 2: PostgreSQL Yedekleme ve Felaketten Kurtarma
+
+## Hızlı Başlangıç
+
+```bash
+cd project-2-backup-recovery
+docker compose up -d
+```
+
+Sistem ayağa kalktıktan sonra yedek alma, felaket tetikleme ve geri yükleme testlerini yapmak için `scripts/` klasöründeki `.sh` dosyalarını sırayla çalıştırabilirsiniz.
+Ayrıca veritabanındaki değişiklikleri izlemek için DBeaver ile `localhost:5432` (Canlı Sistem) ve `localhost:5433` (Kurtarma Testi) portlarına bağlanabilirsiniz.
+
+---
 
 ## 1. Projenin Amacı
 Bu projenin amacı, geleneksel veritabanı yedekleme yöntemlerinin (örneğin sadece `pg_dump` almak) büyük ve aktif veritabanlarında yetersiz kalabileceğini göstermek ve buna karşılık endüstri standardı olan sürekli arşivleme (WAL - Write-Ahead Logging) tabanlı bir yedekleme altyapısı kurmaktır. Proje kapsamında tam (full), diferansiyel (diff) ve artımlı (incremental) yedekler alınarak, olası veri kaybı senaryolarında (yanlışlıkla veri silinmesi veya tablonun düşürülmesi) istenilen saniyeye (Point-In-Time Recovery - PITR) geri dönüş süreci gerçekleştirilmiştir.
@@ -67,3 +79,5 @@ Modern ve aktif sistemlerde veritabanı operasyonlarının en kritik ayaklarınd
 
 > **Not: Güvenlik ve Optimizasyon Denetimi (Audit)**
 > Projenin tüm kodları, çalışabilirlik testleri sonrasında bir denetim sürecinden geçirilmiş olup, tespit edilen yapısal iyileştirmeler `OPTIMIZATIONS.md` dosyasında ayrıca raporlanmıştır. Bu dosya; projeyi test etmek için bilerek zayıf bırakılmış ayarların (örneğin Docker içerisindeki düz metin şifreler, `pg_hba.conf` içerisindeki `trust` ayarları veya eksik veritabanı indeksleri) gerçek bir "production" (canlı) ortama taşınmadan önce nasıl düzeltilmesi ve optimize edilmesi gerektiğini göstermek amacıyla hazırlanmış bir mühendislik farkındalık raporudur.
+
+

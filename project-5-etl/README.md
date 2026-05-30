@@ -1,4 +1,17 @@
-# Project 5 — Veri Temizleme ve ETL Süreçleri Tasarımı
+# Proje 5: Veri Temizleme ve ETL (Extract, Transform, Load)
+
+## Hızlı Başlangıç
+
+```bash
+cd project-5-etl
+docker compose up -d
+```
+
+Konteyner ayağa kalkarken Docker içindeki otomatik yapılandırma sayesinde `sql/` klasöründeki tüm başlangıç ve ETL scriptleri kendi kendine sırayla çalışır. Kalite raporunu terminalden görmek için şunu çalıştırabilirsiniz:
+
+```bash
+docker exec -i etl_postgres psql -U etl_user -d etl_db < sql/03_quality_report.sql
+```
 
 ## 1. Projenin Amacı
 Bu projede, aynı "Müşteri (CRM)" eksenindeki iki farklı dış veri kaynağından (`Customers` ve `Leads`) gelen verilerin, ortak bir veri merkezinde başarıyla entegre edilmesi hedeflenmiştir. ETL pipeline kullanılarak, farklı kaynakların şemaları ortak bir hedefe birleştirilmiş (`UNION ALL`), veri standardizasyonu sağlanmış ve özellikle **aynı kaydın her iki platformda bulunması durumunda (Lead to Customer conflict)** kurumsal önceliklere (Customer > Lead) göre tekilleştirme yapılmıştır. Hatalı ve eksik veriler reddedilmiş ve karantinaya alınmıştır.
@@ -64,3 +77,5 @@ Aşağıdaki terminal raporunda da görüleceği üzere; Toplamda gelen **205 sa
 
 ## 10. Sonuç ve Değerlendirme
 Veritabanı optimizasyonu ve yönetimi sürecinde, özellikle ETL gibi dağınık verilerin entegrasyonu aşamalarında sadece hatalı veriyi silme yaklaşımının yeterli olmadığı gözlemlenmiştir. Farklı veri hedeflerindeki veri mantığında "Veri Güvenilirliği"ni (Customer vs Lead) referans almak, gerçek dünyadaki veri iş gücünün (data engineering) çekirdeğini göstermektedir.
+
+

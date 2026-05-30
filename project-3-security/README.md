@@ -1,5 +1,44 @@
 # Proje 3: Veritabanı Güvenliği ve Erişim Kontrolü
 
+## Hızlı Başlangıç
+
+```bash
+cd project-3-security
+docker compose up -d                          # Oracle 23ai Free (FREEPDB1) ayağa kalkar
+docker compose ps                             # 'healthy' olana kadar bekle (ilk açılış ~birkaç dk)
+
+# Kurulum scriptleri (sırayla, doğru kullanıcıyla):
+./scripts/run_sql.sh 'sys/"Admin#2026pass"@localhost:1521/FREEPDB1 as sysdba'  sql/00_admin_setup.sql
+./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/01_init_schema.sql
+./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/02_insecure_baseline.sql
+./scripts/run_sql.sh 'system/"Admin#2026pass"@localhost:1521/FREEPDB1'         sql/03_users_and_roles.sql
+./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/04_encryption_dbms_crypto.sql
+./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/05_masking_views.sql
+./scripts/run_sql.sh 'system/"Admin#2026pass"@localhost:1521/FREEPDB1'         sql/06_unified_audit.sql
+
+# Güvenlik testleri (07-10, her test kullanıcı başına ayrı bağlantı):
+./scripts/run_security_tests.sh
+
+# SQL Injection demosu:
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r app/requirements.txt
+python app/injection_demo.py
+```
+
+### Bağlantı Bilgileri
+| Alan | Değer |
+|------|-------|
+| Servis (PDB) | `localhost:1521/FREEPDB1` |
+| Admin | `system` / `Admin#2026pass` (SYS işlemleri için `sys ... as sysdba`) |
+| Uygulama şeması | `hospital_app` / `Hospital#2026app` |
+| Test kullanıcıları | `dr_house`, `nurse_joy`, `reception1`, `auditor1` |
+
+> Şifreler ders/lab amaçlıdır; gerçek ortamda kullanılmamalıdır.
+
+🎥 **Video:** _(eklenecek)_
+
+---
+
 ## 1. Projenin Amacı
 Bu projenin temel amacı, bir "Hastane Bilgi Sistemi" senaryosu üzerinden, hassas verinin (TC kimlik numarası, tanı, tedavi) korumasız tutulduğu **güvensiz bir başlangıç durumundan**, katmanlı güvenlik kontrolleriyle donatılmış **güvenli bir hedef duruma** geçişi somut önce-sonra kanıtlarıyla göstermektir. Dört temel güvenlik ekseni uygulanmıştır: **(1)** rol tabanlı erişim kontrolü (en az yetki prensibi), **(2)** hassas alanın AES-256 ile şifrelenmesi, **(3)** yetkiye göre veri maskeleme, **(4)** SQL Injection'a karşı savunma ve **(5)** tüm hassas erişimlerin denetim (audit) kaydı altına alınması. Her bir kontrol, ilgili kullanıcının ne yapıp ne yapamadığı canlı olarak test edilerek doğrulanmıştır.
 
@@ -100,41 +139,4 @@ AUDITOR1             2004       2     Denetçi: hasta verisinde engellendi
 ## 10. Sonuç ve Değerlendirme
 Veritabanı güvenliğinin tek bir önlemden değil, **katmanlı savunmadan** (defense in depth) oluştuğu kanıtlanmıştır. Şifreleme veriyi diskte/yedekte korurken, maskeleme aynı veriyi yetki seviyesine göre farklı gösterir; rol ayrımı kullanıcının erişim alanını daraltır; bind variable uygulama katmanındaki en yaygın saldırıyı (SQL Injection) etkisiz kılar; denetim ise tüm bu erişimleri geriye dönük izlenebilir yapar. Özellikle "görev ayrılığı" (denetçinin hasta verisini görmeden yalnızca logları okuyabilmesi) gibi prensiplerin, gerçek dünyadaki kurumsal güvenlik politikalarının çekirdeğini oluşturduğu görülmüştür.
 
----
 
-## Hızlı Başlangıç
-
-```bash
-cd project-3-security
-docker compose up -d                          # Oracle 23ai Free (FREEPDB1) ayağa kalkar
-docker compose ps                             # 'healthy' olana kadar bekle (ilk açılış ~birkaç dk)
-
-# Kurulum scriptleri (sırayla, doğru kullanıcıyla):
-./scripts/run_sql.sh 'sys/"Admin#2026pass"@localhost:1521/FREEPDB1 as sysdba'  sql/00_admin_setup.sql
-./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/01_init_schema.sql
-./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/02_insecure_baseline.sql
-./scripts/run_sql.sh 'system/"Admin#2026pass"@localhost:1521/FREEPDB1'         sql/03_users_and_roles.sql
-./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/04_encryption_dbms_crypto.sql
-./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/05_masking_views.sql
-./scripts/run_sql.sh 'system/"Admin#2026pass"@localhost:1521/FREEPDB1'         sql/06_unified_audit.sql
-
-# Güvenlik testleri (07-10, her test kullanıcı başına ayrı bağlantı):
-./scripts/run_security_tests.sh
-
-# SQL Injection demosu:
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r app/requirements.txt
-python app/injection_demo.py
-```
-
-### Bağlantı Bilgileri
-| Alan | Değer |
-|------|-------|
-| Servis (PDB) | `localhost:1521/FREEPDB1` |
-| Admin | `system` / `Admin#2026pass` (SYS işlemleri için `sys ... as sysdba`) |
-| Uygulama şeması | `hospital_app` / `Hospital#2026app` |
-| Test kullanıcıları | `dr_house`, `nurse_joy`, `reception1`, `auditor1` |
-
-> Şifreler ders/lab amaçlıdır; gerçek ortamda kullanılmamalıdır.
-
-🎥 **Video:** _(eklenecek)_

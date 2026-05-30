@@ -219,7 +219,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[ ]` Proje amacını ve gösterilecek sorunları netleştir
 
 **B. Ortam Kurulumu**
-- `[ ]` Oracle container kur (`gvenzl/oracle-xe` — ~8GB+, erken pull)
+- `[ ]` Oracle container kur (`gvenzl/oracle-free:23-slim` — Oracle 23ai Free, Apple Silicon native)
 - `[ ]` Veritabanı ve tablo yapısını oluştur
 - `[ ]` Örnek veri yükle
 
@@ -334,7 +334,7 @@ Her proje raporunda aynı başlıkları kullanmak profesyonel görünüm sağlar
 ## Riskler ve Hatırlatmalar
 
 - Proje 4 erken prototip ister — ortam kurulumunu sona bırakma.
-- Oracle container imageları büyük (~8GB+). Erken pull et.
+- Oracle: Apple Silicon'da `gvenzl/oracle-free:23-slim` (23ai, native) kullan; eski `oracle-xe` (21c) x86-only ve emülasyonda sorunlu. Erken pull et.
 - MSSQL Apple Silicon'da `azure-sql-edge` image gerektirir.
 - Rapor ve Git işini sona bırakmak en büyük hata — süreç boyunca küçük commitlerle ilerle.
 - **Her projede önce-sonra farkını somut kanıtla göstermek en kritik unsur.**

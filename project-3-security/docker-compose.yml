@@ -1,0 +1,23 @@
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: p3-oracle
+    environment:
+      # SYS / SYSTEM admin sifresi
+      ORACLE_PASSWORD: Admin#2026pass
+      # Uygulama semasi (FREEPDB1 icinde yerel kullanici)
+      APP_USER: hospital_app
+      APP_USER_PASSWORD: Hospital#2026app
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+volumes:
+  oracle-data:

@@ -151,25 +151,46 @@ Detailed development tracking for this repo. This is the living document for rec
 
 ## Project 3 — Security (Oracle) · Final
 
+Scenario: Hospital records DB. 4 required topics (access control, encryption, SQL injection, audit) + data masking. Full plan in project-3-security/PLAN.md.
+
 ### A. Problem definition
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE -->
+<!-- Hospital scenario chosen (distinct from P2 bank, P5 customers). Sensitive fields: national_id (TC), phone, address, diagnosis, treatment. Insecure-baseline -> secure target with before/after evidence. -->
 
 ### B. Environment setup
-<!-- Status: NOT STARTED -->
-<!-- Oracle container (gvenzl/oracle-xe, ~8GB+). -->
+<!-- Status: DONE (validated on clean container) -->
+<!-- IMAGE DECISION: machine is Apple Silicon (arm64). gvenzl/oracle-xe (21c) is x86-only (slow emulation) -> switched to gvenzl/oracle-free:23-slim (Oracle 23ai Free, native arm64). Image pulled OK (2.27GB). -->
+<!-- docker-compose.yml: PDB FREEPDB1, APP_USER hospital_app. 00_admin_setup.sql grants EXECUTE ON DBMS_CRYPTO + CREATE VIEW to hospital_app. 01_init_schema.sql: doctors(50), patients(1000), medical_records(5000), appointments(5000) synthetic via CONNECT BY. -->
 
 ### C. Initial state
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE (validated) -->
+<!-- 02_insecure_baseline.sql: plaintext national_id readable, sensitive medical data open, no roles/encryption/audit. -->
 
 ### D. Implementation
-<!-- Status: NOT STARTED -->
-<!-- Users/roles, grants, masking/encryption, audit. -->
+<!-- Status: DONE (validated) -->
+<!-- 03_users_and_roles.sql: 4 roles (doctor/nurse/receptionist/auditor) + 4 users, least privilege. NOTE: Oracle has NO column-level SELECT grant -> column restriction done via VIEW. -->
+<!-- 04_encryption_dbms_crypto.sql: national_id AES-256 via DBMS_CRYPTO (fn_encrypt_nid/fn_decrypt_nid), plaintext column dropped, decrypt EXECUTE granted to doctor_role only. Key hardcoded for demo (note: real systems use Oracle Wallet). -->
+<!-- 05_masking_views.sql: v_patients_masked (TC -> XXX-XX-1234), granted to receptionist_role only (definer-rights view decrypts internally, exposes only masked). -->
+<!-- 06_unified_audit.sql: Unified Audit policy pol_patient_access on patients+medical_records (run as SYSTEM). -->
+<!-- Security tests: split into per-user files 07_test_reception / 08_test_doctor / 09_test_auditor / 10_audit_review, driven by scripts/run_security_tests.sh. FINDING: consecutive in-script CONNECT in piped sqlplus is unreliable -> each test uses its own separate sqlplus connection (command-line connect). -->
+<!-- TDE DECISION: instructor PDF says TDE, but TDE needs Enterprise Edition (absent in XE/Free) -> used DBMS_CRYPTO column encryption instead; difference documented in report. -->
+<!-- SQL injection: app/injection_demo.py (python-oracledb thin mode) — vulnerable string-concat vs safe bind variable, connects as least-priv nurse_joy. -->
+<!-- FINDING (23ai privileges): GRANT EXECUTE ON DBMS_CRYPTO must be done by SYS (not SYSTEM) -> 00_admin_setup.sql runs "as sysdba". -->
+<!-- FINDING (23ai audit): DBMS_AUDIT_MGMT.FLUSH not callable by SYSTEM and not needed (23ai writes unified audit records promptly) -> removed flush from 10_audit_review.sql. -->
 
 ### E. Results / evidence
-<!-- Status: NOT STARTED -->
+<!-- Status: IN PROGRESS (full clean-slate validation PASSED on oracle-free 23ai, 2026-05-30) -->
+<!-- CLEAN-SLATE RUN (docker compose down -v, fresh DB): scripts 00-06 all OK (0 errors), data 50/1000/5000/5000. -->
+<!-- 07 reception1: DENIED on patients + medical_records (ORA-00942), sees masked view (XXX-XX-4872, phone 0xxx****xx). -->
+<!-- 08 dr_house: full decrypted TC (e.g. 52623524872). 04 ciphertext verified (688BDFF0...), plaintext column dropped. -->
+<!-- 09 auditor1: DENIED on patients (ORA-00942) but reads unified_audit_trail (AUDIT_VIEWER role). -->
+<!-- 10 audit summary by return_code: DR_HOUSE rc=0 (allowed), RECEPTION1 rc=0 on masked view + rc=2004 on base tables (denied), AUDITOR1 rc=2004 (denied) — separation of duties proven. -->
+<!-- injection_demo.py: vulnerable query returns all 1000 rows, bind-variable returns 0. -->
+<!-- OPEN: screenshots/ empty (capture for report/video per PLAN.md list). Report body to be filled. -->
 
 ### F. Reporting
-<!-- Status: NOT STARTED -->
+<!-- Status: DONE (screenshots pending) -->
+<!-- Full 10-section report written directly in project-3-security/README.md (same convention as P1/P5; AGENTS.md: report lives in <project>/README.md). Redundant report/ folder removed. Body filled with real validated outputs; screenshots still to be captured. -->
 
 ### G. Video
 <!-- Status: NOT STARTED -->

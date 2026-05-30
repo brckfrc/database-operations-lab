@@ -195,7 +195,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 **E. Sonuç / Kanıt**
 - `[x]` Backup dosyaları ve restore sonrası bütünlük kanıtı
-- `[ ]` Senaryo bazlı kurtarma ekran görüntüleri
+- `[x]` Senaryo bazlı kurtarma ekran görüntüleri
 
 **F. Raporlama**
 - `[x]` 10 başlıklı teknik rapor yaz

@@ -29,9 +29,8 @@ services:
       - pgbackrest-repo:/var/lib/pgbackrest:ro
       - pgarchive:/var/lib/postgresql/archive:ro
       - ./config/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf:ro
-    # Intentionally not exposing port 5432 to host to avoid conflicts
-    # Or just don't run it simultaneously if not needed
-
+    ports:
+      - "5433:5432"
 volumes:
   pgdata:
   pgdata-restore:

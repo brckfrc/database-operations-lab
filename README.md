@@ -8,13 +8,13 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 
 🏆 **For Evaluation:** Please review **[`ROADMAP.md`](ROADMAP.md)**, which serves as the primary tracking document with official checklists, reports, and status overviews.
 
-### Projects (planned layout)
+### Projects
 
 | # | Focus | DBMS | Term | Directory | Video |
 |---|-------|------|------|-----------|-------|
 | 1 | Performance & monitoring | MSSQL | **Midterm** | [`project-1-performance/`](project-1-performance/) | [YouTube](https://youtu.be/CvUFwSyqpq8) |
 | 5 | Data cleaning & ETL | PostgreSQL | **Midterm** | [`project-5-etl/`](project-5-etl/) | [YouTube](https://youtu.be/DbLzWvbev1g) |
-| 2 | Backup & recovery | PostgreSQL | Final | `project-2-backup-recovery/` | - |
+| 2 | Backup & recovery | PostgreSQL | Final | [`project-2-backup-recovery/`](project-2-backup-recovery/) | - |
 | 3 | Security & access control | Oracle | Final | `project-3-security/` | - |
 | 4 | Load balancing & distributed setup | PostgreSQL | Final | `project-4-load-balancing/` | - |
 
@@ -28,16 +28,18 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 | [`docs/REVIEW_GUIDE.md`](docs/REVIEW_GUIDE.md) | Optional optimization & security audit prompt |
 | `project-*-*/` | Per project: `sql/`, `report/`, `screenshots/`, `README.md` |
 
-Only **`project-5-etl/`** exists in the repo so far; other folders will be added as work continues. Each active project keeps its course report (and eventually video link) in its own **README**—see [`project-5-etl/README.md`](project-5-etl/README.md).
+Projects 1, 2, and 5 are currently active and completed. Each active project keeps its comprehensive course report, setup instructions, and video links in its own **README** (e.g. [`project-1-performance/README.md`](project-1-performance/README.md)).
 
-## Quick start (Project 5 — ETL)
+## Quick start
+
+Each project is completely isolated and containerized using Docker. To test any project, navigate to its directory and start the environment:
 
 ```bash
-cd project-5-etl
+cd project-[X]-[name]
 docker compose up -d
 ```
 
-Run the numbered scripts under `project-5-etl/sql/` in order; details and DB name **`etl_db`** are in that project’s README.
+Detailed execution steps, SQL scripts, and documentation are provided within each project's respective README file.
 
 ## License
 

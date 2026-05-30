@@ -1,7 +1,7 @@
 # Proje 1: Veritabanı Performans Optimizasyonu ve İzleme
 
 ## 1. Projenin Amacı
-Bu projenin temel amacı, büyük veri kümeleri (milyonlarca satır) üzerinde çalışan bir ilişkisel veritabanında, kötü tasarlanmış mimarinin ve yanlış yazılmış SQL sorgularının sisteme ne kadar büyük bir yük bindirdiğini ("Logical Reads", "CPU Time", "Table Scan" gibi metriklerle) kanıtlamaktır. Ardından, indeksleme stratejileri (Non-Clustered, Covering Index, Foreign Key Index) ve sorgu iyileştirmeleri (Sargable filtreleme) uygulayarak bu yükün nasıl devasa oranlarda düşürüldüğü (Optimizasyon) gösterilmiştir.
+Bu projenin temel amacı, büyük veri kümeleri (milyonlarca satır) üzerinde çalışan bir ilişkisel veritabanında, kötü tasarlanmış mimarinin ve yanlış yazılmış SQL sorgularının sisteme ne kadar büyük bir yük bindirdiğini ("Logical Reads", "CPU Time", "Table Scan" gibi metriklerle) kanıtlamaktır. Ardından, indeksleme stratejileri (Non-Clustered, Covering Index, Foreign Key Index) ve sorgu iyileştirmeleri (Sargable filtreleme) uygulayarak bu yükün nasıl büyük ölçüde düşürüldüğü (Optimizasyon) gösterilmiştir.
 
 ## 2. Kullanılan Platform ve Araçlar
 - **DBMS:** Microsoft SQL Server (Docker Container üzerinden `mcr.microsoft.com/mssql/server:2022-latest` imajı ile çalıştırıldı).
@@ -16,7 +16,7 @@ Dışarıdan hazır CSV çekmek yerine, hız ve tekrar-üretilebilirlik (reprodu
 - `order_items`: 1.000.000 satır
 
 ## 4. Başlangıç Durumu
-Başlangıç durumunda tablolarda sadece `Primary Key` (Clustered Index) bulunuyordu. İlişkisel tablolar birbirine "Foreign Key" üzerinden bağlı olsa da SQL Server otomatik indeks atamadığı için devasa tablo taramaları yaşanıyordu. Ayrıca kasten `YEAR()` fonksiyonu kullanılarak var olan indeksleri görmezden gelmesi sağlandı. Sonuç olarak sorgular RAM'den on binlerce sayfa okuma yapıp kilitlendi.
+Başlangıç durumunda tablolarda sadece `Primary Key` (Clustered Index) bulunuyordu. İlişkisel tablolar birbirine "Foreign Key" üzerinden bağlı olsa da SQL Server otomatik indeks atamadığı için geniş çaplı tablo taramaları yaşanıyordu. Ayrıca kasten `YEAR()` fonksiyonu kullanılarak var olan indeksleri görmezden gelmesi sağlandı. Sonuç olarak sorgular RAM'den on binlerce sayfa okuma yapıp darboğaz oluşturdu.
 
 ## 5. Yapılan İşlemler
 - **Sargable Sorgu Düzeltmesi:** Fonksiyon kullanımı bırakılarak tarih filtreleri (`>=` ve `<`) olarak düzeltildi ve kolona `IX_Orders_OrderDate` indeksi eklendi.
@@ -28,7 +28,7 @@ Başlangıç durumunda tablolarda sadece `Primary Key` (Clustered Index) bulunuy
 ## 6. Kullanılan SQL Komutları ve Açıklamaları
 Projedeki tüm kodlar `sql/` klasörü altındadır:
 - `00_schema.sql`: İskelet kurulumu.
-- `01` ve `02_seed_large_data.sql`: Güçlü CPU döngüleriyle sentetik veri üretimi (1.6 Milyon satır).
+- `01` ve `02_seed_large_data.sql`: Sentetik veri üretimi (1.6 Milyon satır).
 - `03_baseline_bad_queries.sql`: Table scan tetikleyen 4 kötü sorgu (İçinde `DBCC DROPCLEANBUFFERS` ile tampon bellek sıfırlanır ki gerçek fiziksel okuma ölçülebilsin).
 - `04_indexes_and_tuning.sql`: Çözüm indekslerinin `CREATE NONCLUSTERED INDEX` ile yatırılması.
 - `05_after_measurement.sql`: Rafine edilmiş `SELECT` sorguları.
@@ -37,7 +37,13 @@ Projedeki tüm kodlar `sql/` klasörü altındadır:
 - `08_security_roles.sql`: Salt-okunur (Read-Only) rolünün oluşturulması ve izinsiz yazma/silme işlemlerinin `DENY` ile engellenmesi.
 
 ## 7. Ekran Görüntüleri
-Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek farkları) `screenshots/` dizinindedir. Sırasıyla `before_qX.png` (Kırmızı/Sarı Uyarılar, kalın oklar) ve `after_qX.png` (İnce oklar, yeşil ikonlar) olarak incelenebilir.
+Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek farkları) `screenshots/` dizinindedir. Örnek olarak Sorgu 1'in optimizasyon öncesi ve sonrası durumu aşağıda incelenebilir:
+
+**Öncesi (Table Scan - Yüksek Maliyet):**
+![Sorgu 1 Öncesi](screenshots/before_q1.png)
+
+**Sonrası (Index Seek - Düşük Maliyet):**
+![Sorgu 1 Sonrası](screenshots/after_q1.png)
 
 ## 8. Elde Edilen Sonuçlar
 
@@ -45,8 +51,8 @@ Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek far
 |---------|-------|-------------------|---------------------|--------|
 | **Sorgu 1** | Non-Sargable Filtre | 3039 Logical Read (Table Scan - 48 ms) | 3 Logical Read (Index Seek - 1 ms). | Kesin Index Seek ve 48x Hızlanma |
 | **Sorgu 2** | `SELECT *` | Belirsiz Memory Tüketimi (Key Lookup) | Sadece belirlenen kolonlar için düşük RAM tüketimi. | Covering Index Çalıştı |
-| **Sorgu 3** | Eksik JOIN İndeksi | Devasa Nested Loop Scan | Hızlı Hash Match / Nested Loop Seek | Katlanarak Hızlanma |
-| **Sorgu 4** | Cezalandırıcı İndeks (Insert) | 50.000 satır insert işleminde CPU tavan! | İndeks silindikten sonra aynı işlem CPU'yi yormadan bitti. | Yazma (I/O) yükü azaldı |
+| **Sorgu 3** | Eksik JOIN İndeksi | Yüksek Maliyetli Nested Loop Scan | Hızlı Hash Match / Nested Loop Seek | Katlanarak Hızlanma |
+| **Sorgu 4** | Maliyetli İndeks (Insert) | 50.000 satır insert işleminde CPU tavan! | İndeks silindikten sonra aynı işlem CPU'yi yormadan bitti. | Yazma (I/O) yükü azaldı |
 | **Sorgu 5 (Extra)** | Parameter Sniffing | Stored Procedure yanlış parametre planını Cache'leyerek kilitlendi. | `OPTION (RECOMPILE)` komutu kullanılarak her parametreye özel plan çizmesi sağlandı. | Cache (Önbellek) Hatası Giderildi |
 
 ## 9. Karşılaşılan Problemler ve Çözümleri
@@ -54,6 +60,6 @@ Sorguların görsel "Execution Plan" çıktıları (Table Scan vs Index Seek far
 2. Konsol çıktılarının (STDOUT) 1.6 Milyon satırı terminale dökerken sistemi kilitlemesi problemi, sorgulara `INTO #temp` eklenerek çözüldü, böylece sadece I/O ve TIME metrikleri başarıyla raporlandı.
 
 ## 10. Sonuç ve Değerlendirme
-Veritabanı optimizasyonunun sadece "iyi donanım" ile değil, öncelikle "iyi tasarım (Indexing)" ile başarıldığı kanıtlanmıştır. Sorguyu yazan geliştiricinin attığı ufacık bir `YEAR()` fonksiyonu veya bir `SELECT *` alışkanlığının, 1 milyon satırlık bir tabloda veritabanı motorunu nasıl çaresiz bıraktığı açıkça görülmüştür.
+Veritabanı optimizasyonunun sadece "iyi donanım" ile değil, öncelikle "iyi tasarım (Indexing)" ile başarıldığı kanıtlanmıştır. Sorguyu yazan geliştiricinin attığı ufacık bir `YEAR()` fonksiyonu veya bir `SELECT *` alışkanlığının, 1 milyon satırlık bir tabloda veritabanı performansını nasıl darboğaza soktuğu açıkça görülmüştür.
 
 

@@ -32,14 +32,21 @@ Projede modüler olarak tasarlanmış SQL scriptleri yer almaktadır:
 - `03_quality_report.sql`: Sistemin sonuç çıktısını getiren ve Data Quality tablosu çizen rapor scripti.
 
 ## 7. Ekran Görüntüleri
-*(Proje dizinindeki `/screenshots/` klasörüne video anlatımı sonrasında yerleştirilecektir.)*
-- Temizlik sonrası `crm_contacts_clean` tablosu.
-- `crm_contacts_duplicates` çakışma log paneli.
-- Kalite Raporu Konsol Çıktısı.
-- `crm_contacts_rejected` hata sebepleri paneli.
+
+**1. Kalite Raporu (Terminal Çıktısı)**
+![Quality Report](screenshots/1_quality_report_terminal.png)
+
+**2. Temizlenen ve Tekilleştirilen Kayıtlar (Clean)**
+![Clean Data](screenshots/2_crm_contacts_clean.png)
+
+**3. Çakışan / Ezilen Kayıtların Logu (Duplicates)**
+![Duplicates Data](screenshots/3_crm_contacts_duplicates.png)
+
+**4. Hatalı ve Reddedilen Kayıtlar (Rejected)**
+![Rejected Data](screenshots/4_crm_contacts_rejected.png)
 
 ## 8. Elde Edilen Sonuçlar
-Aşağıdaki terminal raporunda da görüleceği üzere; Toplamda gelen **205 satır** üzerinden, ETL motoru **185** tertemiz ve tekil kişiyi asıl hedefine iletti. Toplam **8** çakışan ve duplicate eden kayıt karantinadan farklı olarak "Duplicate Log" tablosuna ayrıştırıldı (`Lead lost to Customer`). Formatı yanlış olan veya tamamen sahte veriler (**12 kayıt**) "Quarantine" yani Reddilenler noktasına düşerek başarılı bir şekilde yalıtılmış oldu.
+Aşağıdaki terminal raporunda da görüleceği üzere; Toplamda gelen **205 satır** üzerinden, ETL motoru **185** temizlenmiş ve tekil (unique) kaydı asıl hedefine iletti. Toplam **8** çakışan ve duplicate eden kayıt karantinadan farklı olarak "Duplicate Log" tablosuna ayrıştırıldı (`Lead lost to Customer`). Formatı yanlış olan veya tamamen sahte veriler (**12 kayıt**) "Quarantine" yani Reddilenler noktasına düşerek başarılı bir şekilde yalıtılmış oldu.
 
 ```text
                         metric                        | count 
@@ -56,4 +63,4 @@ Aşağıdaki terminal raporunda da görüleceği üzere; Toplamda gelen **205 sa
 **Çözüm**: Raw ve Temiz birleştirilmiş veriyi barındıran yapılar RAM üzerinde çalışan `CREATE TEMP TABLE` mantığı ile geçici tablolara alınarak bu kuralın etrafından dolaşıldı. Tek bir `BEGIN ... COMMIT` bloğunda çalıştıktan sonra geçici tablolar silindi (`DROP TABLE`).
 
 ## 10. Sonuç ve Değerlendirme
-Veritabanı optimizasyonu ve yönetimi sürecinde, özellikle ETL gibi dağınık verilerin entegrasyonu aşamalarında sadece "hatalı olanı silme" refleksinin yeterli olmadığı net olarak test edilmiş oldu. Farklı veri hedeflerindeki veri mantığında "Veri Güvenilirliği"ni (Customer vs Lead) referans almak, gerçek dünyadaki veri iş gücünün (data engineering) çekirdeğini göstermektedir.
+Veritabanı optimizasyonu ve yönetimi sürecinde, özellikle ETL gibi dağınık verilerin entegrasyonu aşamalarında sadece hatalı veriyi silme yaklaşımının yeterli olmadığı gözlemlenmiştir. Farklı veri hedeflerindeki veri mantığında "Veri Güvenilirliği"ni (Customer vs Lead) referans almak, gerçek dünyadaki veri iş gücünün (data engineering) çekirdeğini göstermektedir.

@@ -138,8 +138,8 @@ Detailed development tracking for this repo. This is the living document for rec
 <!-- Setup pgbackrest stanza, full, diff, incr backup bash scripts, cron jobs setup via entrypoint, PITR recovery scripts using WAL archiving -->
 
 ### E. Results / evidence
-<!-- Status: PARTIAL -->
-<!-- Disasters A and B recovered with PITR and verified via 05_verify_backup.sh script matching row counts. Waiting for screenshots. -->
+<!-- Status: DONE -->
+<!-- Disasters A and B recovered with PITR and verified via 05_verify_backup.sh script matching row counts. Screenshots captured in project-2-backup-recovery/screenshots/. -->
 
 ### F. Reporting
 <!-- Status: DONE -->

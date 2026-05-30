@@ -32,11 +32,22 @@ Proje başlangıcında sistem sadece standart PostgreSQL imajı kullanıyordu ve
 ## 6. Kullanılan SQL Komutları ve Açıklamaları
 *   `pg_create_restore_point('nokta_adi')`: Veritabanı transaction loglarında belirli bir isme sahip geri dönüş noktası (bookmark) yaratır. PITR yaparken tam olarak o ana gitmek için kullanılır.
 *   `SELECT pg_switch_wal()`: O anki aktif WAL (Write-Ahead Log) dosyasını kapatır ve arşive gönderilmesini zorlar. Acil yedekleme senaryolarında işlemlerin hemen arşive yansıması için tetiklenir.
-*   `DELETE FROM transactions`: WHERE koşulu unutulmuş yıkıcı bir veri silme sorgusu (Felaket A).
-*   `DROP TABLE transactions`: Tablonun sadece verisini değil, yapısını da tamamen yok eden SQL komutu (Felaket B).
+*   `DELETE FROM transactions`: WHERE koşulu unutulmuş, tüm veriyi silen sorgu (Felaket A).
+*   `DROP TABLE transactions`: Tablonun sadece verisini değil, yapısını da tamamen kaldıran SQL komutu (Felaket B).
 
 ## 7. Ekran Görüntüleri
-> *Buraya terminal ekranındaki başarılı restore çıktılarını, `show_backup_info` listesini ve 505.000 satır eşleşmesini gösteren ekran görüntülerini (screenshots/ altına) koyabilirsiniz.*
+
+**1. Alınan Yedeklerin Listesi (Terminal)**
+![Backup Info](screenshots/1_backup_info_terminal.png)
+
+**2. Felaket Anı - Tablonun Silinmesi (DBeaver)**
+![Disaster State](screenshots/2_disaster_state_dbeaver.png)
+
+**3. Başarılı Geri Yükleme Doğrulaması (Terminal)**
+![Verify Backup](screenshots/6_verify_backup_sh.png)
+
+**4. Kurtarılan Verilerin Kontrolü (DBeaver)**
+![Restored Data](screenshots/5_restored_data_dbeaver.png)
 
 ## 8. Elde Edilen Sonuçlar
 *   Sistem, standart `pg_dump` yedeklemesinden WAL tabanlı sürekli arşivlemeye başarıyla geçirildi.

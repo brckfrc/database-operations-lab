@@ -18,16 +18,23 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 | 3 | Security & access control | Oracle | Final | [`project-3-security/`](project-3-security/) | - |
 | 4 | Load balancing & distributed setup | PostgreSQL | Final | `project-4-load-balancing/` | - |
 
-### Project Highlights
+### ✨ Project Highlights
 
-*   **[Project 1: Performance & Monitoring](project-1-performance/)**
-    Demonstrates the severe impact of poor indexing and non-sargable queries on a 1.6 million-row MSSQL database. Shows before/after metrics highlighting massive I/O reduction via Covering Indexes and Execution Plan tuning.
-*   **[Project 2: Backup & Recovery](project-2-backup-recovery/)**
-    Implements a robust disaster recovery architecture in PostgreSQL using `pgBackRest`. Proves that a destroyed table can be perfectly recovered using Point-In-Time Recovery (PITR) and WAL archiving without losing intermediate transactions.
-*   **[Project 3: Security & Access Control](project-3-security/)**
-    Applies a "Defense in Depth" strategy to an Oracle 23ai database. Features AES-256 column encryption (`DBMS_CRYPTO`), role-based data masking, prevention of SQL Injection, and tracks malicious access attempts via Unified Auditing.
-*   **[Project 5: Data Cleaning & ETL](project-5-etl/)**
-    Simulates a real-world data engineering pipeline. Ingests dirty data from multiple CRM sources, deduplicates conflicting records based on business rules (Customer > Lead), and quarantines invalid formats automatically.
+⚡ **[P1: Performance & Monitoring](project-1-performance/)**
+> **Challenge:** 1.6M-row MSSQL database suffering from severe I/O bottlenecks.
+> **Key Concepts:** Covering Indexes, Sargable Queries, Execution Plan Tuning.
+
+⏪ **[P2: Disaster Recovery](project-2-backup-recovery/)**
+> **Challenge:** Recovering a completely destroyed PostgreSQL table without data loss.
+> **Key Concepts:** `pgBackRest`, WAL Archiving, Point-In-Time Recovery (PITR).
+
+🛡️ **[P3: Security & Access Control](project-3-security/)**
+> **Challenge:** Securing highly sensitive hospital records in Oracle 23ai.
+> **Key Concepts:** AES-256 (`DBMS_CRYPTO`), Data Masking, Unified Audit, Defense in Depth.
+
+🧹 **[P5: Data Cleaning & ETL](project-5-etl/)**
+> **Challenge:** Merging and cleaning conflicting CRM data from multiple sources.
+> **Key Concepts:** Automated Staging, Business-rule Deduplication, Quarantine.
 
 ### Repository map
 

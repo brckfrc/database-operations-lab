@@ -18,6 +18,17 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 | 3 | Security & access control | Oracle | Final | [`project-3-security/`](project-3-security/) | - |
 | 4 | Load balancing & distributed setup | PostgreSQL | Final | `project-4-load-balancing/` | - |
 
+### Project Highlights
+
+*   **[Project 1: Performance & Monitoring](project-1-performance/)**
+    Demonstrates the severe impact of poor indexing and non-sargable queries on a 1.6 million-row MSSQL database. Shows before/after metrics highlighting massive I/O reduction via Covering Indexes and Execution Plan tuning.
+*   **[Project 2: Backup & Recovery](project-2-backup-recovery/)**
+    Implements a robust disaster recovery architecture in PostgreSQL using `pgBackRest`. Proves that a destroyed table can be perfectly recovered using Point-In-Time Recovery (PITR) and WAL archiving without losing intermediate transactions.
+*   **[Project 3: Security & Access Control](project-3-security/)**
+    Applies a "Defense in Depth" strategy to an Oracle 23ai database. Features AES-256 column encryption (`DBMS_CRYPTO`), role-based data masking, prevention of SQL Injection, and tracks malicious access attempts via Unified Auditing.
+*   **[Project 5: Data Cleaning & ETL](project-5-etl/)**
+    Simulates a real-world data engineering pipeline. Ingests dirty data from multiple CRM sources, deduplicates conflicting records based on business rules (Customer > Lead), and quarantines invalid formats automatically.
+
 ### Repository map
 
 | Path | Role |

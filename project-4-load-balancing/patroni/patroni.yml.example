@@ -1,4 +1,4 @@
-# Patroni config — /etc/patroni/patroni.yml on each DB node (node-specific IP + name).
+# Patroni config: /etc/patroni/patroni.yml on each DB node (node-specific IP + name).
 # Actual passwords are in .secrets/p4.env (gitignored); <PLACEHOLDER> is used here.
 # Node mapping: node1=10.10.0.1, node2=10.10.0.2 (node3 is not DB, only etcd witness).
 scope: pg-cluster

@@ -55,9 +55,9 @@ root/
 
 ## Known gotchas
 
-- Oracle: on **Apple Silicon (arm64)** use `gvenzl/oracle-free:23-slim` (Oracle Database 23ai Free) — it has native arm64 builds. The older `gvenzl/oracle-xe` (21c) is x86-only and runs under slow/flaky emulation on arm64. Oracle uses a pluggable-database model: app schema and local users live in the PDB (`FREEPDB1` for oracle-free), not the CDB. Pull early.
+- Oracle: on **Apple Silicon (arm64)** use `gvenzl/oracle-free:23-slim` (Oracle Database 23ai Free) - it has native arm64 builds. The older `gvenzl/oracle-xe` (21c) is x86-only and runs under slow/flaky emulation on arm64. Oracle uses a pluggable-database model: app schema and local users live in the PDB (`FREEPDB1` for oracle-free), not the CDB. Pull early.
 - MSSQL on Apple Silicon requires `azure-sql-edge` image, not the standard `mcr.microsoft.com/mssql/server`.
-- Project 4 (Load Balancing) requires multi-node setup — Docker Compose with multiple PostgreSQL services or Debian server. Do not attempt single-container hacks.
+- Project 4 (Load Balancing) requires multi-node setup - Docker Compose with multiple PostgreSQL services or Debian server. Do not attempt single-container hacks.
 - PostgreSQL `pg_dump` format matters: use `--format=custom` for PITR-related demos in Project 2, not plain SQL dumps.
 - When running ETL scripts (Project 5), always `BEGIN; ... COMMIT;` to allow rollback on failure.
 

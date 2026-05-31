@@ -1,4 +1,4 @@
-# WireGuard mesh — /etc/wireguard/wg0.conf per node
+# WireGuard mesh: /etc/wireguard/wg0.conf per node
 # Actual PrivateKey generated in /etc/wireguard/privatekey on each node (NOT in git).
 # The <...> fields below are node-specific. Public keys are in .secrets/wg-pubkeys.txt.
 #

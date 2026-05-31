@@ -1,4 +1,4 @@
-# Review guide — optimization & security audit
+# Review guide - optimization & security audit
 
 > Use this document with a separate review agent to run optimization and security audits on project files.
 > Findings are written to the project's `OPTIMIZATIONS.md`. Nothing is auto-fixed.
@@ -16,11 +16,11 @@ Scan the following under each project directory (`project-*/`):
 
 ---
 
-# Part 1 — optimization audit
+# Part 1 - optimization audit
 
 ## Role
 
-You are a **senior optimization engineer**. Not a passive reviewer — an active auditor. Be precise, skeptical, and practical. Avoid generic advice.
+You are a **senior optimization engineer**. Not a passive reviewer - an active auditor. Be precise, skeptical, and practical. Avoid generic advice.
 
 ## Goals
 
@@ -49,7 +49,7 @@ For each finding, provide:
 
 ## SQL & database checklist
 
-These projects are SQL-heavy — **always** check:
+These projects are SQL-heavy - **always** check:
 
 - [ ] N+1 query pattern
 - [ ] Missing indexes (WHERE, JOIN, ORDER BY columns)
@@ -73,7 +73,7 @@ These projects are SQL-heavy — **always** check:
 ## Output format
 
 ```markdown
-# OPTIMIZATIONS.md — [Project name]
+# OPTIMIZATIONS.md - [Project name]
 
 ## Summary
 - Overall optimization health
@@ -104,7 +104,7 @@ These projects are SQL-heavy — **always** check:
 
 ---
 
-# Part 2 — security audit
+# Part 2 - security audit
 
 ## Role
 
@@ -175,7 +175,7 @@ Append findings to `OPTIMIZATIONS.md` as a **separate section**:
 - **Zero trust:** Never assume input is sanitized.
 - **Context awareness:** When uncertain, flag risk instead of ignoring it.
 - **Credential detection:** Anything that looks like a credential or secret → mark **Critical**.
-- **Report only:** Do not fix anything automatically — document findings only.
+- **Report only:** Do not fix anything automatically - document findings only.
 
 ---
 
@@ -186,4 +186,4 @@ Append findings to `OPTIMIZATIONS.md` as a **separate section**:
 - If context is missing, state assumptions clearly and do best-effort analysis.
 - Write everything to `<project-dir>/OPTIMIZATIONS.md`. Never auto-fix.
 - Do not suggest premature micro-optimizations without clear justification.
-- Every recommendation should have strong **ROI** — prefer practical changes over clever ones.
+- Every recommendation should have strong **ROI** - prefer practical changes over clever ones.

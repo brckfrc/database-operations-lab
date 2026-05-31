@@ -1,4 +1,4 @@
-# BLM4522 — Ağ Tabanlı Paralel Dağıtım Sistemleri · Yol Haritası
+# BLM4522 - Ağ Tabanlı Paralel Dağıtım Sistemleri, Yol Haritası
 
 > Bu doküman, ders kapsamındaki 5 projeyi iş bazında takip etmek için kullanılır.
 > Her proje kendi bölümünde tanım, checklist ve teslim çıktılarıyla yer alır.
@@ -69,18 +69,18 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ## Vize Projeleri
 
-### Proje 5 — Veri Temizleme ve ETL Süreçleri (PostgreSQL)
+### Proje 5: Veri Temizleme ve ETL Süreçleri (PostgreSQL)
 
 **Amaç:** Kirli veriyi temizlemek, standartlaştırmak ve hedef tabloya/şemaya yüklemek.
 
-**Gösterilecek Problemler:** Eksik değer · yanlış format · mükerrer kayıt · tutarsız isimlendirme · bozuk tarih ve telefon alanları.
+**Gösterilecek Problemler:** Eksik değer, yanlış format, mükerrer kayıt, tutarsız isimlendirme, bozuk tarih ve telefon alanları.
 
 **Kanıt:** Ham veri ve temiz veri karşılaştırması, ETL adımları, quality report, dönüşüm kuralları, çakışan kayıtların `crm_contacts_duplicates` üzerinden izlenebilirliği.
 
 #### Checklist
 
 **A. Problem Tanımı**
-- `[x]` İki farklı dış kaynaktan (`data/source/customers_seed.csv`, `data/source/leads_seed.csv` — Datablist kaynaklı ~100'er satır örnek) gelen verilerin, `etl_db` içinde ortak hedef tablolarda birleştirilmesi ve standartlaştırılması hedefini netleştir. *(Kanıt: `project-5-etl/README.md` §1, §3.)*
+- `[x]` İki farklı dış kaynaktan (`data/source/customers_seed.csv`, `data/source/leads_seed.csv` - Datablist kaynaklı ~100'er satır örnek) gelen verilerin, `etl_db` içinde ortak hedef tablolarda birleştirilmesi ve standartlaştırılması hedefini netleştir. *(Kanıt: `project-5-etl/README.md` §1, §3.)*
 
 **B. Ortam Kurulumu**
 - `[x]` PostgreSQL 16 `docker-compose.yml` hazırla ve başlat (`POSTGRES_DB=etl_db`). *(Kanıt: `project-5-etl/docker-compose.yml`.)*
@@ -89,7 +89,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 **C. Başlangıç Durumu**
 - `[x]` Her iki seed verisini de kendi staging tablolarına import et (`sql/01a_import_seed.sql`, `COPY`). *(Kanıt: script.)*
-- `[x]` Kontrollü veri bozma katmanını çalıştır (`sql/01b_make_dirty.sql` — duplicate, null, cross-duplicate). *(Kanıt: script.)*
+- `[x]` Kontrollü veri bozma katmanını çalıştır (`sql/01b_make_dirty.sql` - duplicate, null, cross-duplicate). *(Kanıt: script.)*
 - `[x]` Verideki dağınıklığı ve uyumsuzluğu gözlemle. *(Kanıt: `README.md` §4.)*
 
 **D. Uygulama**
@@ -98,8 +98,8 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` Kurtarılamayanları `crm_contacts_rejected` tablosuna aktar. *(Kanıt: `README.md` §5, §8.)*
 
 **E. Sonuç / Kanıt**
-- `[ ]` Ekran görüntüleri ile kaynak ayrımını ve temizleme farklarını topla (`project-5-etl/screenshots/` — henüz boş; README §7 planına göre video sonrası).
-- `[x]` `sql/03_quality_report.sql` ile entegrasyon/kalite raporu çıkart (ör. 185 clean, 8 suppressed duplicate, 12 rejected — `README.md` §8 tablosu).
+- `[x]` Ekran görüntüleri ile kaynak ayrımını ve temizleme farklarını topla (`project-5-etl/screenshots/` - henüz boş; README §7 planına göre video sonrası).
+- `[x]` `sql/03_quality_report.sql` ile entegrasyon/kalite raporu çıkart (ör. 185 clean, 8 suppressed duplicate, 12 rejected - `README.md` §8 tablosu).
 
 **F. Raporlama**
 - `[x]` `project-5-etl/README.md` altında 10 başlıklı proje raporunu yaz.
@@ -109,17 +109,17 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ---
 
-### Proje 1 — Veritabanı Performans Optimizasyonu ve İzleme (MSSQL)
+### Proje 1: Veritabanı Performans Optimizasyonu ve İzleme (MSSQL)
 
 **Amaç:** Bir e-ticaret sipariş veritabanı üzerinde yavaş sorguları tespit etmek, indeks ve sorgu iyileştirmesi uygulamak, DMV izleme araçlarıyla önce-sonra farkını somut metriklerle göstermek.
 
-**Senaryo:** E-ticaret sipariş sistemi — `customers`, `products`, `orders`, `order_items` tabloları. Veri tamamen T-SQL ile sentetik üretilir (tekrar üretilebilir, repo'yu klonlayan herkes aynı ortamı kurabilir).
+**Senaryo:** E-ticaret sipariş sistemi - `customers`, `products`, `orders`, `order_items` tabloları. Veri tamamen T-SQL ile sentetik üretilir (tekrar üretilebilir, repo'yu klonlayan herkes aynı ortamı kurabilir).
 
-**Hedef Veri Hacmi:** customers ~100K · products ~20K · orders ~500K–1M · order_items ~1–2M.
+**Hedef Veri Hacmi:** customers ~100K, products ~20K, orders ~500K–1M, order_items ~1–2M.
 
-**Gösterilecek Problemler:** Non-sargable filtre (`YEAR(order_date)`) · gereksiz `SELECT *` · indekssiz JOIN · gereksiz indeksin yazma maliyeti · yüksek logical reads / CPU time.
+**Gösterilecek Problemler:** Non-sargable filtre (`YEAR(order_date)`), gereksiz `SELECT *`, indekssiz JOIN, gereksiz indeksin yazma maliyeti, yüksek logical reads / CPU time.
 
-**Kanıt:** `SET STATISTICS IO, TIME ON` çıktıları · execution plan ekran görüntüleri (önce-sonra) · logical reads / elapsed time karşılaştırma tablosu · DMV sorgu çıktıları.
+**Kanıt:** `SET STATISTICS IO, TIME ON` çıktıları, execution plan ekran görüntüleri (önce-sonra), logical reads / elapsed time karşılaştırma tablosu, DMV sorgu çıktıları.
 
 #### Checklist
 
@@ -128,9 +128,9 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` Gösterilecek 4 kötü sorgu patternini belirle: (1) non-sargable date filter, (2) SELECT * + eksik covering index, (3) indekssiz JOIN, (4) gereksiz indeksin INSERT maliyeti.
 
 **B. Ortam Kurulumu**
-- `[x]` MSSQL container'ı kur — `docker-compose.yml` ile `azure-sql-edge` (Apple Silicon uyumlu). (Not: `2022-latest` x86 emulator kullanıldı)
+- `[x]` MSSQL container'ı kur - `docker-compose.yml` ile `azure-sql-edge` (Apple Silicon uyumlu). (Not: `2022-latest` x86 emulator kullanıldı)
 - `[x]` `sql/00_schema.sql` ile veritabanı ve tablo yapısını oluştur (`customers`, `products`, `orders`, `order_items`).
-- `[x]` `sql/01_seed_lookup.sql` ile küçük lookup tablosunu (`products` — ~20K) doldur.
+- `[x]` `sql/01_seed_lookup.sql` ile küçük lookup tablosunu (`products` - ~20K) doldur.
 - `[x]` `sql/02_seed_large_data.sql` ile büyük tabloları T-SQL loop / `INSERT … SELECT` ile sentetik üret (`customers` ~100K, `orders` ~500K–1M, `order_items` ~1–2M). Tarihler 5 yıla yayılacak, status/region/category alanları kontrollü dağılımda.
 
 **C. Başlangıç Durumu**
@@ -165,11 +165,11 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ## Final Projeleri
 
-### Proje 2 — Veritabanı Yedekleme ve Felaketten Kurtarma (PostgreSQL)
+### Proje 2: Veritabanı Yedekleme ve Felaketten Kurtarma (PostgreSQL)
 
 **Amaç:** Yedek alma, veri kaybı senaryosu oluşturma ve geri dönüş sürecini göstermek.
 
-**Gösterilecek Problemler:** Yanlışlıkla veri silinmesi · bozulmuş tablo senaryosu · manuel backup sürecinin yetersizliği.
+**Gösterilecek Problemler:** Yanlışlıkla veri silinmesi, bozulmuş tablo senaryosu, manuel backup sürecinin yetersizliği.
 
 **Kanıt:** Backup dosyaları, restore sonrası veri bütünlüğü, senaryo bazlı kurtarma açıklaması, ekran görüntüleri.
 
@@ -186,7 +186,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` Manuel backup yetersizliğini göster
 
 **D. Uygulama**
-- `[x]` Tam yedek (full backup) al — `pg_dump --format=custom` (pgbackrest kullanıldı)
+- `[x]` Tam yedek (full backup) al - `pg_dump --format=custom` (pgbackrest kullanıldı)
 - `[x]` Zamanlanmış yedek mantığı kur
 - `[x]` Veri silme senaryosu oluştur
 - `[x]` Silinen veriyi geri getir (restore)
@@ -205,11 +205,11 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ---
 
-### Proje 3 — Veritabanı Güvenliği ve Erişim Kontrolü (Oracle)
+### Proje 3: Veritabanı Güvenliği ve Erişim Kontrolü (Oracle)
 
 **Amaç:** Kullanıcı yetkileri, roller, hassas veri koruması ve aktivite izlemesini göstermek.
 
-**Gösterilecek Problemler:** Aşırı yetkili kullanıcı · korumasız hassas veri alanları · audit kapalı ortam · rol ayrımının olmaması.
+**Gösterilecek Problemler:** Aşırı yetkili kullanıcı, korumasız hassas veri alanları, audit kapalı ortam, rol ayrımının olmaması.
 
 **Kanıt:** Yetki verilen ve engellenen kullanıcı örnekleri, audit çıktıları, güvenlik farkı gösteren önce-sonra tablosu.
 
@@ -219,7 +219,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` Proje amacını ve gösterilecek sorunları netleştir
 
 **B. Ortam Kurulumu**
-- `[x]` Oracle container kur (`gvenzl/oracle-free:23-slim` — Oracle 23ai Free, Apple Silicon native)
+- `[x]` Oracle container kur (`gvenzl/oracle-free:23-slim` - Oracle 23ai Free, Apple Silicon native)
 - `[x]` Veritabanı ve tablo yapısını oluştur
 - `[x]` Örnek veri yükle
 
@@ -246,11 +246,11 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 ---
 
-### Proje 4 — Veritabanı Yük Dengeleme ve Dağıtık Yapılar (PostgreSQL)
+### Proje 4: Veritabanı Yük Dengeleme ve Dağıtık Yapılar (PostgreSQL)
 
 **Amaç:** Replication, standby, failover ve temel yük dağıtımı mantığını gerçek bir senaryo halinde göstermek.
 
-**Gösterilecek Problemler:** Tek sunucu bağımlılığı · failover eksikliği · okuma yükünün tek node üzerinde kalması.
+**Gösterilecek Problemler:** Tek sunucu bağımlılığı, failover eksikliği, okuma yükünün tek node üzerinde kalması.
 
 **Kanıt:** Node diyagramı, replication çalıştığını gösteren veri kanıtı, failover testi, kısa uptime / davranış özeti.
 
@@ -261,7 +261,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 > **Mimari kararı:** Tek host yerine **3 gerçek makine** kuruldu: Contabo (10.10.0.1, x86/8GB, DB+HAProxy) + AWS t4g.small (10.10.0.2, ARM/2GB, DB) + witness-node (10.10.0.3, etcd witness). WireGuard mesh (`10.10.0.0/24`) üzerinden, mevcut OpenVPN'e dokunmadan. Detay: `project-4-load-balancing/PLAN.md` ve `README.md`.
 
 **A. Problem Tanımı**
-- `[x]` Proje amacını ve gösterilecek sorunları netleştir *(Kanıt: `project-4-load-balancing/README.md` §1, §4 — tek sunucu bağımlılığı / SPOF.)*
+- `[x]` Proje amacını ve gösterilecek sorunları netleştir *(Kanıt: `project-4-load-balancing/README.md` §1, §4 - tek sunucu bağımlılığı / SPOF.)*
 
 **B. Ortam Kurulumu**
 - `[x]` 3 gerçek makine + WireGuard mesh hazırla (Debian 13 × 2 + mevcut prod witness). *(Kanıt: `wireguard/wg0.conf.example`; mesh ping 0% loss, 6/6 handshake.)*
@@ -278,19 +278,19 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 **E. Sonuç / Kanıt**
 - `[x]` Replication çalıştığını gösteren veri kanıtı *(README §8 sonuç tablosu; `accounts` Lag 0.)*
-- `[x]` Failover test sonuçları *(README §8 — TL 1→2, HAProxy otomatik yeni primary'ye yöneldi, failback replica.)*
+- `[x]` Failover test sonuçları *(README §8 - TL 1→2, HAProxy otomatik yeni primary'ye yöneldi, failback replica.)*
 - `[x]` Node diyagramı *(README'de ASCII mevcut; görsel `screenshots/11_node_diagram.png` çekildi.)*
 - `[x]` Uptime / davranış özeti *(README §10.)*
 
 **F. Raporlama**
-- `[x]` 10 başlıklı teknik rapor yaz *(`project-4-load-balancing/README.md` — ekran görüntüleri eklenecek.)*
+- `[x]` 10 başlıklı teknik rapor yaz *(`project-4-load-balancing/README.md` - ekran görüntüleri eklenecek.)*
 
 **G. Video**
 - `[ ]` ≥ 10 dk video çek
 
 ---
 
-## Rapor Şablonu (10 Başlık — Her Proje İçin)
+## Rapor Şablonu (10 Başlık - Her Proje İçin)
 
 Her proje raporunda aynı başlıkları kullanmak profesyonel görünüm sağlar ve video ile birebir eşleşir.
 
@@ -335,10 +335,10 @@ Her proje raporunda aynı başlıkları kullanmak profesyonel görünüm sağlar
 
 ## Riskler ve Hatırlatmalar
 
-- Proje 4 erken prototip ister — ortam kurulumunu sona bırakma.
+- Proje 4 erken prototip ister - ortam kurulumunu sona bırakma.
 - Oracle: Apple Silicon'da `gvenzl/oracle-free:23-slim` (23ai, native) kullan; eski `oracle-xe` (21c) x86-only ve emülasyonda sorunlu. Erken pull et.
 - MSSQL Apple Silicon'da `azure-sql-edge` image gerektirir.
-- Rapor ve Git işini sona bırakmak en büyük hata — süreç boyunca küçük commitlerle ilerle.
+- Rapor ve Git işini sona bırakmak en büyük hata - süreç boyunca küçük commitlerle ilerle.
 - **Her projede önce-sonra farkını somut kanıtla göstermek en kritik unsur.**
 
 ---

@@ -1,4 +1,4 @@
-# OPTIMIZATIONS.md — Project 2: Backup & Recovery
+# OPTIMIZATIONS.md - Project 2: Backup & Recovery
 
 ## Summary
 - **Overall optimization health:** Average. The system is functional for backup/recovery demonstration but lacks indexing and resource limits for a production environment.

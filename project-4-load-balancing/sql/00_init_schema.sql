@@ -1,5 +1,5 @@
 -- Executed on Primary (HAProxy :5000 or directly on leader).
--- Simple bank account schema — used in replication and failover demo.
+-- Simple bank account schema (used in replication and failover demo).
 CREATE TABLE IF NOT EXISTS accounts (
   id      serial PRIMARY KEY,
   owner   text NOT NULL,

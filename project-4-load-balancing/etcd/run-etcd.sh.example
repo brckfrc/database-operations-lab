@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# etcd 3-node cluster — this script is run on each node with its own NAME and MESH_IP.
+# etcd 3-node cluster (this script is run on each node with its own NAME and MESH_IP).
 # --network host: etcd binds directly to the WireGuard mesh IP (10.10.0.x); ports are NOT exposed to the public.
 # Client URLs only listen on the mesh IP + 127.0.0.1.
 #

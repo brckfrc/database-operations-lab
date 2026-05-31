@@ -33,14 +33,22 @@ bash scripts/03_failover_test.sh        # otomatik failover senaryosu
 | Node | Mesh IP | Sağlayıcı / Donanım | Rol |
 |------|---------|---------------------|-----|
 | `contabo` | `10.10.0.1` | Contabo, x86, 8GB, Debian 13 | PostgreSQL + Patroni + etcd + **HAProxy** |
-| `aws` | `10.10.0.2` | AWS t4g.small, ARM, 2GB, Debian 13 | PostgreSQL + Patroni + etcd |
+| `aws` | `10.10.0.2` | AWS t4g.small, ARM, 2GB, Debian 13 | PostgreSQL + Patroni + etcd + **HAProxy** |
 | `witness-node` | `10.10.0.3` | mevcut prod sunucu, x86 | **etcd witness** (yalnızca quorum) |
+
+> **Yüksek erişilebilirlik her iki katmanda:** Hem veritabanı (Patroni failover) hem de yük dengeleyici (iki bağımsız HAProxy) yedeklidir — tek nokta arıza (SPOF) yoktur. Uygulama çoklu-host bağlantı string'i ile iki HAProxy'yi de bilir; biri çökerse diğerine kendiliğinden geçer.
 
 | Erişim Noktası | Adres | Açıklama |
 |----------------|-------|----------|
-| Yazma (write) | `10.10.0.1:5000` | HAProxy → her zaman **primary** |
-| Okuma (read) | `10.10.0.1:5001` | HAProxy → **replica** |
-| HAProxy Stats | `10.10.0.1:7000` | İzleme paneli |
+| Yazma (write) | `10.10.0.1:5000` **+** `10.10.0.2:5000` | İki HAProxy → her zaman **primary**'ye |
+| Okuma (read) | `10.10.0.1:5001` **+** `10.10.0.2:5001` | İki HAProxy → **replica**'ya |
+| HAProxy Stats | `10.10.0.1:7000` / `10.10.0.2:7000` | İki izleme paneli |
+
+**Uygulama bağlantı string'i (LB switch'li, yazma için):**
+```
+postgresql://<user>:<pass>@10.10.0.1:5000,10.10.0.2:5000/postgres?target_session_attrs=read-write
+```
+Bir HAProxy çökerse libpq otomatik diğerini dener; `target_session_attrs=read-write` her zaman primary'ye düşmeyi garantiler.
 
 > Gerçek IP, WireGuard anahtarları ve veritabanı şifreleri sunucularda + `.secrets/` altında tutulur (git'e girmez). Repo'da yalnızca sırsız `.example` şablonları bulunur.
 
@@ -57,13 +65,14 @@ flowchart TD
     subgraph WG [WireGuard Şifreli Mesh - 10.10.0.0/24]
         direction LR
         subgraph Node1 [Contabo Node - 10.10.0.1]
-            H[HAProxy]
+            H1[HAProxy]
             P1[(PostgreSQL 16 Primary)]
             E1(etcd)
-            H -->|:5000 Write| P1
+            H1 -->|:5000 Write| P1
         end
         
         subgraph Node2 [AWS Node - 10.10.0.2]
+            H2[HAProxy]
             P2[(PostgreSQL 16 Replica)]
             E2(etcd)
         end
@@ -72,10 +81,14 @@ flowchart TD
             E3(etcd)
         end
         
-        H -.->|:5001 Read| P2
+        H1 -.->|:5001 Read| P2
+        H2 -->|:5000 Write| P1
+        H2 -.->|:5001 Read| P2
         P1 ====>|Streaming Replication| P2
         E1 <--> E2 <--> E3 <--> E1
     end
+    APP[Uygulama<br/>multi-host conn] --> H1
+    APP --> H2
     
     U(Uygulama) -->|Read/Write Trafiği| H
 ```
@@ -106,6 +119,7 @@ HA kurulmadan önceki sorun: **tek sunucu bağımlılığı.** Tek bir PostgreSQ
 - **Streaming Replication:** Patroni + PostgreSQL 16 ile Contabo primary, AWS replica olarak yapılandırıldı; veri gerçek zamanlı çoğaltıldı.
 - **Otomatik Failover:** Primary durdurulduğunda Patroni'nin etcd quorum'u üzerinden yeni lideri **otomatik** seçtiği doğrulandı.
 - **Yük Dengeleme:** HAProxy ile `:5000` yazma trafiğini primary'ye, `:5001` okuma trafiğini replica'ya yönlendiren read/write split kuruldu.
+- **Yük Dengeleyici Yedekliliği (LB-HA):** İki bağımsız HAProxy (Contabo + AWS) kuruldu. Uygulama çoklu-host bağlantı string'i ile ikisini de bilir; bir HAProxy çökerse libpq otomatik diğerine geçer (`target_session_attrs=read-write` ile her zaman primary'ye). Böylece yük dengeleyici katmanı da tek nokta arıza olmaktan çıkarıldı.
 
 ## 6. Kullanılan Komutlar ve Yapılandırma Dosyaları
 Tüm yapılandırma ve betikler katman katman repo'da yer alır (gerçek sırlar hariç, `.example` olarak):
@@ -181,6 +195,7 @@ Tüm bileşenler **üç gerçek makine üzerinde** uçtan uca doğrulanmıştır
 | **Yük Dengeleme** | Tek adres, tek node | `:5000` write→primary, `:5001` read→replica | `inet_server_addr()` farkı |
 | **HAProxy Adaptasyonu** | - | Failover sonrası `:5000` yeni primary'ye **kendiliğinden** yöneldi | write `→10.10.0.2` (eski: `10.10.0.1`) |
 | **Failback** | - | Eski primary geri gelince **replica** olarak katıldı | Timeline 2, Lag 0, veri senkron |
+| **LB Switch** | Tek HAProxy = SPOF | Bir HAProxy durdurulunca uygulama diğerine **kendiliğinden** geçti, yazma kesilmedi | multi-host conn: Contabo LB down → AWS LB üzerinden primary'ye yazma OK |
 
 **Failover anının özeti (gerçek test çıktısı):**
 

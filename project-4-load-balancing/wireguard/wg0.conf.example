@@ -1,0 +1,24 @@
+# WireGuard mesh — /etc/wireguard/wg0.conf per node
+# Actual PrivateKey generated in /etc/wireguard/privatekey on each node (NOT in git).
+# The <...> fields below are node-specific. Public keys are in .secrets/wg-pubkeys.txt.
+#
+# Mesh IP plan: Node1=10.10.0.1, Node2=10.10.0.2, node3=10.10.0.3  | port 51820/udp
+# PersistentKeepalive=25 is mandatory because Node2 is behind NAT.
+
+[Interface]
+Address    = 10.10.0.<NODE_NO>/24
+ListenPort = 51820
+PrivateKey = <BU_NODE_PRIVATE_KEY>
+
+# --- the other two nodes are added as peers (full mesh) ---
+[Peer]
+PublicKey           = <PEER1_PUBLIC_KEY>
+Endpoint            = <PEER1_PUBLIC_IP>:51820
+AllowedIPs          = 10.10.0.<PEER1_NO>/32
+PersistentKeepalive = 25
+
+[Peer]
+PublicKey           = <PEER2_PUBLIC_KEY>
+Endpoint            = <PEER2_PUBLIC_IP>:51820
+AllowedIPs          = 10.10.0.<PEER2_NO>/32
+PersistentKeepalive = 25

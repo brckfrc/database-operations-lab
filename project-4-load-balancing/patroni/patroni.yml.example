@@ -1,0 +1,60 @@
+# Patroni config — /etc/patroni/patroni.yml on each DB node (node-specific IP + name).
+# Actual passwords are in .secrets/p4.env (gitignored); <PLACEHOLDER> is used here.
+# Node mapping: node1=10.10.0.1, node2=10.10.0.2 (node3 is not DB, only etcd witness).
+scope: pg-cluster
+namespace: /service/
+name: <NODE_NAME>            # node1 | node2
+
+restapi:
+  listen: <MESH_IP>:8008
+  connect_address: <MESH_IP>:8008
+
+etcd3:
+  hosts:
+    - 10.10.0.1:2379
+    - 10.10.0.2:2379
+    - 10.10.0.3:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      parameters:
+        max_connections: 100
+        shared_buffers: 256MB        # 1.5GB profile (Node2 t4g.small)
+        wal_level: replica
+        hot_standby: "on"
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_keep_size: 256MB
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+postgresql:
+  listen: <MESH_IP>:5432
+  connect_address: <MESH_IP>:5432
+  data_dir: /var/lib/postgresql/data/pgdata
+  bin_dir: /usr/lib/postgresql/16/bin
+  authentication:
+    superuser:
+      username: postgres
+      password: "<PG_SUPERUSER_PASSWORD>"
+    replication:
+      username: replicator
+      password: "<PG_REPLICATION_PASSWORD>"
+  pg_hba:
+    - local all all trust
+    - host all all 127.0.0.1/32 trust
+    - host all all 10.10.0.0/24 scram-sha-256
+    - host replication replicator 10.10.0.0/24 scram-sha-256
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false

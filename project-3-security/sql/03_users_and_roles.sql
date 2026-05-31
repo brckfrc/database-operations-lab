@@ -1,10 +1,10 @@
 -- =====================================================================
 -- 03_users_and_roles.sql
--- Calistirma kullanicisi: SYSTEM (admin)  @ FREEPDB1
--- Amac: Roller + kullanicilar + en az yetki (least privilege).
---   Roller: doctor_role / nurse_role / receptionist_role / auditor_role
---   NOT: Oracle kolon-bazli SELECT grant DESTEKLEMEZ -> kolon kisitlamasi
---        VIEW ile yapilir (bkz. 05_masking_views.sql).
+-- Execution user: SYSTEM (admin) @ FREEPDB1
+-- Purpose: Roles + users + least privilege.
+--   Roles: doctor_role / nurse_role / receptionist_role / auditor_role
+--   NOTE: Oracle DOES NOT SUPPORT column-based SELECT grants -> column restriction
+--        Done via VIEW (see 05_masking_views.sql).
 -- =====================================================================
 
 -- ---- Temizlik (tekrar calistirilabilirlik) ----
@@ -23,30 +23,30 @@ BEGIN
 END;
 /
 
--- ---- Roller ----
+-- ---- Roles ----
 CREATE ROLE doctor_role;
 CREATE ROLE nurse_role;
 CREATE ROLE receptionist_role;
 CREATE ROLE auditor_role;
 
--- ---- Tablo bazli yetkiler (SYSTEM, DBA yetkisiyle baska semaya grant verebilir) ----
--- Doktor: hasta + tibbi kayit tam erisim, randevu okuma
+-- ---- Table-based privileges (SYSTEM, with DBA privilege, can grant to another schema) ----
+-- Doctor: full access to patients + medical records, read access to appointments
 GRANT SELECT, INSERT, UPDATE ON hospital_app.patients        TO doctor_role;
 GRANT SELECT, INSERT, UPDATE ON hospital_app.medical_records TO doctor_role;
 GRANT SELECT                 ON hospital_app.appointments     TO doctor_role;
 
--- Hemsire: hasta okuma, randevu yonetimi, tibbi kayit okuma
+-- Nurse: read access to patients, manage appointments, read medical records
 GRANT SELECT                 ON hospital_app.patients         TO nurse_role;
 GRANT SELECT, INSERT, UPDATE ON hospital_app.appointments     TO nurse_role;
 GRANT SELECT                 ON hospital_app.medical_records  TO nurse_role;
 
--- Resepsiyonist: SADECE randevu; hasta tablosuna erisim YOK (maskeli view 05'te verilir)
+-- Receptionist: ONLY appointments; NO access to patient table (masked view given in 05)
 GRANT SELECT, INSERT, UPDATE ON hospital_app.appointments     TO receptionist_role;
 
--- Denetci: hasta verisine erisim YOK; sadece audit trail (gorevler ayriligi)
+-- Auditor: NO access to patient data; only audit trail (segregation of duties)
 GRANT AUDIT_VIEWER TO auditor_role;
 
--- ---- Kullanicilar ----
+-- ---- Users ----
 CREATE USER dr_house   IDENTIFIED BY "DrHouse#2026";
 CREATE USER nurse_joy  IDENTIFIED BY "NurseJoy#2026";
 CREATE USER reception1 IDENTIFIED BY "Recept1#2026";
@@ -59,4 +59,4 @@ GRANT nurse_role        TO nurse_joy;
 GRANT receptionist_role TO reception1;
 GRANT auditor_role      TO auditor1;
 
-PROMPT >>> Roller ve kullanicilar olusturuldu (en az yetki prensibi).
+PROMPT >>> Roles and users created (least privilege principle).

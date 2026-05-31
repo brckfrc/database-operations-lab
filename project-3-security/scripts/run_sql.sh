@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # =====================================================================
-# run_sql.sh - Bir SQL dosyasini container icindeki sqlplus ile calistirir.
+# run_sql.sh - Executes an SQL file via sqlplus inside the container.
 #
-# Kullanim:
+# Usage:
 #   ./scripts/run_sql.sh '<connect_string>' <sql_dosyasi>
 #
-# Ornek:
+# Example:
 #   ./scripts/run_sql.sh 'system/"Admin#2026pass"@localhost:1521/FREEPDB1'      sql/00_admin_setup.sql
 #   ./scripts/run_sql.sh 'hospital_app/"Hospital#2026app"@localhost:1521/FREEPDB1' sql/01_init_schema.sql
 #
-# Not: 07_security_tests.sql kendi icinde CONNECT yaptigi icin baslangic
-#      baglantisi olarak system verilebilir.
+# Note: Because 07_security_tests.sql uses CONNECT internally, the initial
+#      system can be provided as the connection.
 # =====================================================================
 set -euo pipefail
 

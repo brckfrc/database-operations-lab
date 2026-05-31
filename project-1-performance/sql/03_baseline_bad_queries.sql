@@ -18,7 +18,7 @@ FROM orders
 WHERE YEAR(order_date) = 2024;
 GO
 
--- 2. SELECT * Temebelliği
+-- 2. SELECT * Laziness
 PRINT '--- QUERY 2: SELECT * Overkill ---';
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
@@ -31,7 +31,7 @@ JOIN order_items oi ON o.order_id = oi.order_id
 WHERE o.status = 'Pending';
 GO
 
--- 3. Eksik İndeks (Missing Index on Foreign Key)
+-- 3. Missing Index (Missing Index on Foreign Key)
 PRINT '--- QUERY 3: Missing Index on JOIN ---';
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
@@ -44,16 +44,16 @@ WHERE c.region = 'North'
 GROUP BY c.first_name, c.last_name;
 GO
 
--- 4. Cezalandırıcı İndeks (Yazma Yükü - Baseline "Kötü" Durum)
+-- 4. Punishing Index (Write Load - Baseline "Bad" Scenario)
 PRINT '--- QUERY 4: Over-Indexing Write Penalty ---';
--- Önce veritabanını yoracak, okumada işe yarasa da yazmada ağırlaştıracak bir indeks kasten ekliyoruz.
+-- First, we intentionally add an index that will exhaust the database; useful for reads but heavy for writes.
 CREATE NONCLUSTERED INDEX IX_Orders_BadIndex ON orders (status, total_amount, order_date);
 GO
 
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
 GO
--- 50.000 yeni sipariş ekleyip İndeksin güncellenme maliyetini (gecikmeyi) ölçüyoruz.
+-- Add 50,000 new orders to measure the index update cost (latency).
 INSERT INTO orders (customer_id, order_date, total_amount, status)
 SELECT TOP 50000 
     customer_id, GETDATE(), 150.00, 'Pending'

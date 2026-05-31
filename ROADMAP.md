@@ -14,7 +14,7 @@
 | 1 | Performans Optimizasyonu ve İzleme | MSSQL | Vize | Tamamlandı `[x]` |
 | 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | `[ ]` |
 | 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | `[ ]` |
-| 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | `[ ]` |
+| 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
 | 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | Tamamlandı `[x]` |
 
 ### Debian Sunucu İhtiyacı
@@ -258,30 +258,32 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 
 #### Checklist
 
+> **Mimari kararı:** Tek host yerine **3 gerçek makine** kuruldu: Contabo (10.10.0.1, x86/8GB, DB+HAProxy) + AWS t4g.small (10.10.0.2, ARM/2GB, DB) + witness-node (10.10.0.3, etcd witness). WireGuard mesh (`10.10.0.0/24`) üzerinden, mevcut OpenVPN'e dokunmadan. Detay: `project-4-load-balancing/PLAN.md` ve `README.md`.
+
 **A. Problem Tanımı**
-- `[ ]` Proje amacını ve gösterilecek sorunları netleştir
+- `[x]` Proje amacını ve gösterilecek sorunları netleştir *(Kanıt: `project-4-load-balancing/README.md` §1, §4 — tek sunucu bağımlılığı / SPOF.)*
 
 **B. Ortam Kurulumu**
-- `[ ]` Debian sunucuyu hazırla (veya multi-container Docker Compose)
-- `[ ]` En az 2 PostgreSQL node kur (primary + standby)
+- `[x]` 3 gerçek makine + WireGuard mesh hazırla (Debian 13 × 2 + mevcut prod witness). *(Kanıt: `wireguard/wg0.conf.example`; mesh ping 0% loss, 6/6 handshake.)*
+- `[x]` 2 PostgreSQL node (primary + standby) + etcd 3-node quorum kur. *(Kanıt: `patroni/`, `etcd/run-etcd.sh.example`; etcd 3/3 healthy, `patronictl list` Leader+Replica.)*
 
 **C. Başlangıç Durumu**
-- `[ ]` Tek sunucu bağımlılığını ve failover eksikliğini göster
+- `[x]` Tek sunucu bağımlılığını ve failover eksikliğini göster (SPOF). *(Kanıt: `README.md` §4.)*
 
 **D. Uygulama**
-- `[ ]` Streaming replication yapılandır
-- `[ ]` Veri çoğaltmayı doğrula
-- `[ ]` Failover testi (primary'yi kapat, standby promote)
-- `[ ]` Read replica / temel load balancing mantığı
+- `[x]` Streaming replication yapılandır *(Patroni + PostgreSQL 16; `patroni/patroni.yml.example`.)*
+- `[x]` Veri çoğaltmayı doğrula *(Primary'de INSERT → replica'da görünür, replica read-only; `sql/01_replication_check.sql`.)*
+- `[x]` Failover testi (primary'yi kapat, standby promote) *(Primary durduruldu → AWS otomatik Leader, TL 1→2, quorum kararı; `scripts/03_failover_test.sh`.)*
+- `[x]` Read replica / temel load balancing mantığı *(HAProxy `:5000` write→primary, `:5001` read→replica; `haproxy/haproxy.cfg`.)*
 
 **E. Sonuç / Kanıt**
-- `[ ]` Replication çalıştığını gösteren veri kanıtı
-- `[ ]` Failover test sonuçları
-- `[ ]` Node diyagramı
-- `[ ]` Uptime / davranış özeti
+- `[x]` Replication çalıştığını gösteren veri kanıtı *(README §8 sonuç tablosu; `accounts` Lag 0.)*
+- `[x]` Failover test sonuçları *(README §8 — TL 1→2, HAProxy otomatik yeni primary'ye yöneldi, failback replica.)*
+- `[x]` Node diyagramı *(README'de ASCII mevcut; görsel `screenshots/11_node_diagram.png` çekildi.)*
+- `[x]` Uptime / davranış özeti *(README §10.)*
 
 **F. Raporlama**
-- `[ ]` 10 başlıklı teknik rapor yaz
+- `[x]` 10 başlıklı teknik rapor yaz *(`project-4-load-balancing/README.md` — ekran görüntüleri eklenecek.)*
 
 **G. Video**
 - `[ ]` ≥ 10 dk video çek

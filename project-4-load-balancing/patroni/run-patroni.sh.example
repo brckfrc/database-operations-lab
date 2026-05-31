@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Patroni container launcher (on Node1/Node2 DB nodes).
+# Prerequisite: image build (docker build -t patroni-pg16:local patroni/),
+#          /etc/patroni/patroni.yml exists as a REAL FILE (NOT a directory!).
+set -euo pipefail
+sudo docker rm -f patroni >/dev/null 2>&1 || true
+sudo docker volume create patroni-data >/dev/null 2>&1 || true
+sudo chown -R 999:999 /var/lib/docker/volumes/patroni-data/_data   # postgres uid
+sudo docker run -d --name patroni --restart unless-stopped --network host \
+  -v /etc/patroni/patroni.yml:/etc/patroni/patroni.yml:ro \
+  -v patroni-data:/var/lib/postgresql/data \
+  patroni-pg16:local

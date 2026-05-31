@@ -1,14 +1,14 @@
 -- =====================================================================
 -- 06_unified_audit.sql
--- Calistirma kullanicisi: SYSTEM (admin)  @ FREEPDB1
--- Amac: Unified Auditing ile hassas tablolara erisimi denetlemek.
---   - pol_patient_access: patients + medical_records uzerinde
---     SELECT/UPDATE/DELETE eylemlerini izler.
---   NOT: Audit kayitlari kuyruga yazilir; sorgulamadan once
---        DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL ile bosaltilir (07'de).
+-- Execution user: SYSTEM (admin) @ FREEPDB1
+-- Purpose: Audit access to sensitive tables using Unified Auditing.
+--   - pol_patient_access: monitors SELECT/UPDATE/DELETE
+--     actions on patients + medical_records.
+--   NOTE: Audit records are written to a queue; before querying
+--        Flushed with DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL (in 07).
 -- =====================================================================
 
--- Temizlik (tekrar calistirilabilirlik)
+-- Cleanup (re-runnability)
 BEGIN EXECUTE IMMEDIATE 'NOAUDIT POLICY pol_patient_access';     EXCEPTION WHEN OTHERS THEN NULL; END;
 /
 BEGIN EXECUTE IMMEDIATE 'DROP AUDIT POLICY pol_patient_access';  EXCEPTION WHEN OTHERS THEN NULL; END;
@@ -25,9 +25,9 @@ CREATE AUDIT POLICY pol_patient_access
 
 AUDIT POLICY pol_patient_access;
 
-PROMPT === Aktif audit politikalari ===
+PROMPT === Active audit policies ===
 SELECT policy_name, enabled_option
 FROM   audit_unified_enabled_policies
 WHERE  policy_name = 'POL_PATIENT_ACCESS';
 
-PROMPT >>> Unified Audit politikasi aktif.
+PROMPT >>> Unified Audit policy active.

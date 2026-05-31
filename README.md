@@ -16,7 +16,7 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 | 5 | Data cleaning & ETL | PostgreSQL | **Midterm** | [`project-5-etl/`](project-5-etl/) | [YouTube](https://youtu.be/DbLzWvbev1g) |
 | 2 | Backup & recovery | PostgreSQL | Final | [`project-2-backup-recovery/`](project-2-backup-recovery/) | - |
 | 3 | Security & access control | Oracle | Final | [`project-3-security/`](project-3-security/) | - |
-| 4 | Load balancing & distributed setup | PostgreSQL | Final | `project-4-load-balancing/` | - |
+| 4 | Load balancing & distributed setup | PostgreSQL | Final | [`project-4-load-balancing/`](project-4-load-balancing/) | - |
 
 ### ✨ Project Highlights
 
@@ -31,6 +31,10 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 🛡️ **[P3: Security & Access Control](project-3-security/)**
 > **Challenge:** Securing highly sensitive hospital records in Oracle 23ai.
 > **Key Concepts:** AES-256 (`DBMS_CRYPTO`), Data Masking, Unified Audit, Defense in Depth.
+
+⚖️ **[P4: Load Balancing & HA](project-4-load-balancing/)**
+> **Challenge:** Eliminating Single Point of Failure (SPOF) with a geographically distributed cluster.
+> **Key Concepts:** PostgreSQL, Patroni, etcd 3-node Quorum, HAProxy, WireGuard Mesh, Automatic Failover.
 
 🧹 **[P5: Data Cleaning & ETL](project-5-etl/)**
 > **Challenge:** Merging and cleaning conflicting CRM data from multiple sources.

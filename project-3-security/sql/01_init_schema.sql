@@ -1,13 +1,13 @@
 -- =====================================================================
 -- 01_init_schema.sql
--- Calistirma kullanicisi: hospital_app  @ FREEPDB1
--- Amac: Hastane semasi + sentetik veri (tekrar uretilebilir).
---   Tablolar: doctors, patients, medical_records, appointments
---   Hassas alanlar: patients.national_id (TC), phone, address;
+-- Execution user: hospital_app @ FREEPDB1
+-- Purpose: Hospital schema + synthetic data (reproducible).
+--   Tables: doctors, patients, medical_records, appointments
+--   Sensitive fields: patients.national_id (ID), phone, address;
 --                   medical_records.diagnosis, treatment
 -- =====================================================================
 
--- Tekrar calistirilabilirlik icin onceki tablolari dusur
+-- Drop previous tables for re-runnability
 BEGIN
   FOR t IN (SELECT table_name FROM user_tables
             WHERE table_name IN ('APPOINTMENTS','MEDICAL_RECORDS','PATIENTS','DOCTORS')) LOOP
@@ -25,7 +25,7 @@ CREATE TABLE doctors (
 CREATE TABLE patients (
   patient_id   NUMBER        PRIMARY KEY,
   full_name    VARCHAR2(120) NOT NULL,
-  national_id  VARCHAR2(11)  NOT NULL,   -- TC kimlik (baslangicta DUZ METIN)
+  national_id  VARCHAR2(11)  NOT NULL,   -- National ID (PLAIN TEXT initially)
   birth_date   DATE,
   blood_type   VARCHAR2(3),
   phone        VARCHAR2(15),
@@ -61,7 +61,7 @@ SELECT level,
        END
 FROM dual CONNECT BY level <= 50;
 
--- ---- Hastalar (1000) ----
+-- ---- Patients (1000) ----
 INSERT INTO patients (patient_id, full_name, national_id, birth_date, blood_type, phone, address)
 SELECT level,
        INITCAP(DBMS_RANDOM.STRING('L',6)) || ' ' || INITCAP(DBMS_RANDOM.STRING('L',8)),
@@ -91,7 +91,7 @@ SELECT level,
        END
 FROM dual CONNECT BY level <= 5000;
 
--- ---- Randevular (5000) ----
+-- ---- Appointments (5000) ----
 INSERT INTO appointments (appointment_id, patient_id, doctor_id, appt_date, status, notes)
 SELECT level,
        TRUNC(DBMS_RANDOM.VALUE(1, 1001)),
@@ -103,7 +103,7 @@ FROM dual CONNECT BY level <= 5000;
 
 COMMIT;
 
-PROMPT >>> Sema + veri yuklendi:
+PROMPT >>> Schema + data loaded:
 SELECT 'doctors'        AS tablo, COUNT(*) AS adet FROM doctors
 UNION ALL SELECT 'patients',        COUNT(*) FROM patients
 UNION ALL SELECT 'medical_records', COUNT(*) FROM medical_records

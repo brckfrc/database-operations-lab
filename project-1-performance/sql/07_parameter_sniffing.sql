@@ -3,19 +3,19 @@ GO
 
 PRINT '=== PARAMETER SNIFFING SETUP ===';
 
--- 1. Veri Dengesizliği (Data Skew) Yaratalım
--- Parameter Sniffing hatasının oluşabilmesi için dengesiz veriye ihtiyacımız var.
--- Siparişlere "prioriy" (öncelik) kolonu ekliyoruz. %99'u Normal, sadece 100 tanesi Critical olacak.
+-- 1. Create Data Skew
+-- Data skew is required to trigger the Parameter Sniffing error.
+-- Adding a "priority" column to orders. 99% will be Normal, only 100 will be Critical.
 IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'priority' AND Object_ID = Object_ID(N'orders'))
 BEGIN
     ALTER TABLE orders ADD priority VARCHAR(10) DEFAULT 'Normal';
     EXEC('UPDATE orders SET priority = ''Normal''');
-    -- Sadece 100 kaydı Critical yapıyoruz
+    -- Making only 100 records Critical
     EXEC('UPDATE TOP (100) orders SET priority = ''Critical''');
 END
 GO
 
--- Öncelik kolonu için non-clustered index ekliyoruz (Covering değil ki Key Lookup yapsın)
+-- Adding a non-clustered index for the priority column (Not Covering, so it forces a Key Lookup)
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Orders_Priority' AND object_id = OBJECT_ID('orders'))
 BEGIN
     CREATE NONCLUSTERED INDEX IX_Orders_Priority ON orders(priority);
@@ -23,8 +23,8 @@ END
 GO
 
 
--- 2. Stored Procedure OLUŞTURALIM
--- Bu prosedür "priority" bilgisini parametre olarak alıp Sipariş detaylarını dönecek.
+-- 2. CREATE Stored Procedure
+-- This procedure takes "priority" as a parameter and returns Order details.
 CREATE OR ALTER PROCEDURE GetOrdersByPriority
     @p_priority VARCHAR(10)
 AS
@@ -41,23 +41,23 @@ DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
 GO
 
--- 3. TUZAĞIN KURULMASI:
--- Sistemi kandırıyoruz. Önce sadece 100 kayıt dönen 'Critical' parametresiyle SP'yi çalıştırıyoruz.
--- SQL Server bu "Küçük" veri için süper hızlı olan "Index Seek + Key Lookup" planını çizip Cache (hafıza) atıyor.
+-- 3. SETTING THE TRAP:
+-- Tricking the system. First, we run the SP with the 'Critical' parameter that returns only 100 records.
+-- SQL Server draws a super-fast "Index Seek + Key Lookup" plan for this "Small" data and caches it.
 EXEC GetOrdersByPriority @p_priority = 'Critical';
 GO
 
--- 4. HATANIN GÖRÜLMESİ (BUNUN EKRAN GÖRÜNTÜSÜ ALINACAK - before_sniffing.png):
--- Şimdi aynı SP'yi 499.000 kayıt dönen 'Normal' parametresiyle çağırıyoruz.
--- SQL Server tembellik yapıp yukarıdaki Cache planını(Key Lookup) kullanacak ve felç geçirecek!
--- Execution Plan'a bakarsanız devasa kalın oklar ve uyarılar göreceksiniz.
+-- 4. OBSERVING THE ERROR (TAKE SCREENSHOT - before_sniffing.png):
+-- Now calling the same SP with the 'Normal' parameter returning 499,000 records.
+-- SQL Server will act lazy, use the cached plan (Key Lookup) from above, and paralyze itself!
+-- Check the Execution Plan to see massive thick arrows and warnings.
 EXEC GetOrdersByPriority @p_priority = 'Normal';
 GO
 
 
 PRINT '=== AFTER (SOLUTION WITH RECOMPILE) ===';
--- 5. ÇÖZÜM: OPTION (RECOMPILE)
--- SP'mizin sonuna sihirli kodu ekliyoruz. "Cache tutma, her parametreye özel anlık plan çiz" diyoruz.
+-- 5. SOLUTION: OPTION (RECOMPILE)
+-- Adding the magic code to our SP: "Do not cache, draw an ad-hoc plan for each parameter."
 CREATE OR ALTER PROCEDURE GetOrdersByPriority
     @p_priority VARCHAR(10)
 AS
@@ -69,9 +69,9 @@ BEGIN
 END
 GO
 
--- 6. ÇÖZÜMÜN GÖRÜLMESİ (BUNUN EKRAN GÖRÜNTÜSÜ ALINACAK - after_sniffing.png):
--- Şimdi büyük veri getiren Normal'i tekrar sorguluyoruz.
--- SQL Server bu sefer Key Lookup gibi amelelik yapmak yerine, doğrudan mantıklı olan "Clustered Index Scan" planını seçecek! 
--- Execution plan tertemiz olacak.
+-- 6. OBSERVING THE SOLUTION (TAKE SCREENSHOT - after_sniffing.png):
+-- Now querying the large-data returning Normal again.
+-- Instead of doing grunt work like Key Lookup, SQL Server will directly choose the logical "Clustered Index Scan" plan this time! 
+-- Execution plan will be crystal clear.
 EXEC GetOrdersByPriority @p_priority = 'Normal';
 GO

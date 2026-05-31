@@ -3,9 +3,9 @@ services:
     image: gvenzl/oracle-free:23-slim
     container_name: p3-oracle
     environment:
-      # SYS / SYSTEM admin sifresi
+      # SYS / SYSTEM admin password
       ORACLE_PASSWORD: Admin#2026pass
-      # Uygulama semasi (FREEPDB1 icinde yerel kullanici)
+      # Application schema (local user inside FREEPDB1)
       APP_USER: hospital_app
       APP_USER_PASSWORD: Hospital#2026app
     ports:

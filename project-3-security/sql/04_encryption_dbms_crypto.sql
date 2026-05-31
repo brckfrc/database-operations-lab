@@ -1,14 +1,14 @@
 -- =====================================================================
 -- 04_encryption_dbms_crypto.sql
--- Calistirma kullanicisi: hospital_app  @ FREEPDB1
--- Amac: TC kimligi (national_id) AES-256 ile kolon bazli sifrelemek.
---   - fn_encrypt_nid / fn_decrypt_nid fonksiyonlari (DBMS_CRYPTO)
---   - duz metin kolon dusurulur, yerine national_id_enc RAW kalir
---   NOT: Anahtar demo amacli fonksiyon icinde sabittir; gercek sistemde
---        Oracle Wallet/keystore kullanilir.
+-- Execution user: hospital_app @ FREEPDB1
+-- Purpose: Column-based AES-256 encryption for national_id.
+--   - fn_encrypt_nid / fn_decrypt_nid functions (DBMS_CRYPTO)
+--   - plain text column dropped, national_id_enc RAW remains
+--   NOTE: Key is hardcoded in function for demo; in a real system
+--        Oracle Wallet/keystore is used.
 -- =====================================================================
 
--- Sifreli kolonu ekle (varsa once dusur -> tekrar calistirilabilirlik)
+-- Add encrypted column (drop first if exists -> re-runnability)
 DECLARE
   l_cnt NUMBER;
 BEGIN
@@ -38,11 +38,11 @@ BEGIN
 END;
 /
 
--- Mevcut TC'leri sifrele, duz metni temizle
+-- Encrypt existing national IDs, clear plain text
 UPDATE patients SET national_id_enc = fn_encrypt_nid(national_id);
 COMMIT;
 
--- Duz metin kolonu dusur (artik sadece sifreli sürum saklanir)
+-- Drop plain text column (only encrypted version is stored now)
 DECLARE
   l_cnt NUMBER;
 BEGIN
@@ -54,14 +54,14 @@ BEGIN
 END;
 /
 
--- Cozme yetkisini sadece doktor roluna ver
+-- Grant decrypt privilege only to doctor role
 GRANT EXECUTE ON fn_decrypt_nid TO doctor_role;
 
 SET LINESIZE 160
-PROMPT === Sifreli kolon ham hali (anlamsiz RAW) ===
+PROMPT === Encrypted column raw state (meaningless RAW) ===
 SELECT patient_id, national_id_enc FROM patients WHERE ROWNUM <= 3;
 
-PROMPT === Yetkili cozum (fn_decrypt_nid) ===
+PROMPT === Authorized decryption (fn_decrypt_nid) ===
 SELECT patient_id, fn_decrypt_nid(national_id_enc) AS tc FROM patients WHERE ROWNUM <= 3;
 
-PROMPT >>> national_id artik AES-256 ile sifreli.
+PROMPT >>> national_id is now encrypted with AES-256.

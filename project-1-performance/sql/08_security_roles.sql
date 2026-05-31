@@ -1,9 +1,9 @@
 -- =========================================================================
--- 8) ROLE AND PRIVILEGE MANAGEMENT (GÜVENLİK VE YETKİLENDİRME)
+-- 8) ROLE AND PRIVILEGE MANAGEMENT
 -- =========================================================================
 
--- 1. Yalnızca Okuma (Raporlama) Yapabilecek Özel Bir Rol Oluşturulması
--- (Pazarlama ve Raporlama ekiplerinin yanlışlıkla veri bozmasını engellemek için)
+-- 1. Create a Custom Read-Only (Reporting) Role
+-- (To prevent Marketing and Reporting teams from accidentally corrupting data)
 IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'report_reader' AND type = 'R')
 BEGIN
     CREATE ROLE report_reader;
@@ -11,14 +11,14 @@ BEGIN
 END
 GO
 
--- 2. İlgili Yetkilerin Tanımlanması (Grant)
--- Sadece okunması gereken tablolara SELECT yetkisi veriyoruz
+-- 2. Define Relevant Privileges (Grant)
+-- Granting SELECT privilege only to tables that need to be read
 GRANT SELECT ON customers TO report_reader;
 GRANT SELECT ON orders TO report_reader;
 GRANT SELECT ON products TO report_reader;
 
--- 3. Tehlikeli Yetkilerin Açıkça Reddedilmesi (Deny)
--- Bu rol kesinlikle sisteme veri ekleyemez, silemez veya güncelleyemez
+-- 3. Explicitly Deny Dangerous Privileges (Deny)
+-- This role absolutely cannot insert, delete, or update data in the system
 DENY INSERT, UPDATE, DELETE ON orders TO report_reader;
 DENY INSERT, UPDATE, DELETE ON customers TO report_reader;
 DENY INSERT, UPDATE, DELETE ON products TO report_reader;
@@ -27,26 +27,26 @@ PRINT 'Rol yetkilendirmesi (Grant/Deny) tamamlandı.';
 GO
 
 -- =========================================================================
--- TEST SENARYOSU
--- (Not: Bu testlerin yapılabilmesi için sisteme gerçekten o rolde bir 
--- login eklenmiş olması gerekir. Aşağıda bunun sanal bir simülasyonu vardır)
+-- TEST SCENARIO
+-- (Note: For these tests to run, an actual login for that role 
+-- login must be added. A virtual simulation of this is below)
 -- =========================================================================
 
 /*
--- Test Kullanıcısı Yaratma ve Role Ekleme
+-- Create Test User and Add to Role
 CREATE USER test_user WITHOUT LOGIN;
 ALTER ROLE report_reader ADD MEMBER test_user;
 
--- Sisteme test_user kimliği ile bürün (Impersonate)
+-- Impersonate test_user in the system
 EXECUTE AS USER = 'test_user';
 
--- SELECT: Başarılı Olacaktır
+-- SELECT: Will Succeed
 SELECT TOP 5 * FROM orders;
 
--- INSERT: HATA VERECEKTİR (The INSERT permission was denied on the object 'orders')
+-- INSERT: WILL THROW ERROR (The INSERT permission was denied on the object 'orders')
 INSERT INTO orders (customer_id, order_date, total_amount, status)
 VALUES (1, GETDATE(), 100, 'Pending');
 
--- Kimlikten çık ve DBA (Admin) yetkilerine geri dön
+-- Revert identity and return to DBA (Admin) privileges
 REVERT;
 */

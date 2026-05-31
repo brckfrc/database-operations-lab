@@ -7,7 +7,7 @@ GO
 
 PRINT '=== AFTER OPTIMIZATION QUERIES ===';
 
--- 1. Sargable Hale Getirilmiş Filtre
+-- 1. Sargable Filter
 PRINT '--- OPTIMIZED QUERY 1: Sargable Date Range Filter ---';
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
@@ -18,7 +18,7 @@ FROM orders
 WHERE order_date >= '2024-01-01' AND order_date < '2025-01-01';
 GO
 
--- 2. Spesifik Kolonlarla Sorgu (Select * Düzeltmesi)
+-- 2. Query with Specific Columns (Select * Fix)
 PRINT '--- OPTIMIZED QUERY 2: Specific Columns (No SELECT *) ---';
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
@@ -31,9 +31,9 @@ JOIN order_items oi ON o.order_id = oi.order_id
 WHERE o.status = 'Pending';
 GO
 
--- 3. İndekslenmiş JOIN
+-- 3. Indexed JOIN
 PRINT '--- OPTIMIZED QUERY 3: Indexed JOIN ---';
--- Sorgu kodu değişmedi, SADECE arkada yatan indeksler sayesinde bu sorgu "Index Seek" yetenekleri kazandı.
+-- The query code hasn't changed, ONLY the underlying indexes gave this query "Index Seek" capabilities.
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
 GO
@@ -45,9 +45,9 @@ WHERE c.region = 'North'
 GROUP BY c.first_name, c.last_name;
 GO
 
--- 4. Temizlenmiş İndeks İle Hızlı Yazma
+-- 4. Fast Writes with Cleaned Index
 PRINT '--- OPTIMIZED QUERY 4: Fast Insert Without Penalty ---';
--- Gereksiz IX_Orders_BadIndex kaldırıldıktan sonra yazma hızını test ediyoruz.
+-- Testing write speed after removing the unnecessary IX_Orders_BadIndex.
 DBCC DROPCLEANBUFFERS;
 DBCC FREEPROCCACHE;
 GO

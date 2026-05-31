@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# etcd 3-node cluster — this script is run on each node with its own NAME and MESH_IP.
+# --network host: etcd binds directly to the WireGuard mesh IP (10.10.0.x); ports are NOT exposed to the public.
+# Client URLs only listen on the mesh IP + 127.0.0.1.
+#
+# Node mapping:  node1=10.10.0.1 | node2=10.10.0.2 | node3=10.10.0.3 (witness)
+set -euo pipefail
+
+NAME="${1:?node name: node1|node2|node3}"
+MESH_IP="${2:?mesh IP: 10.10.0.x}"
+
+IMG="quay.io/coreos/etcd:v3.5.16"
+TOKEN="pg-etcd-cluster"
+ICLUSTER="node1=http://10.10.0.1:2380,node2=http://10.10.0.2:2380,node3=http://10.10.0.3:2380"
+
+sudo docker rm -f etcd >/dev/null 2>&1 || true
+sudo docker run -d --name etcd --restart unless-stopped --network host \
+  -v etcd-data:/etcd-data \
+  "$IMG" /usr/local/bin/etcd \
+  --name "$NAME" \
+  --data-dir /etcd-data \
+  --initial-advertise-peer-urls "http://$MESH_IP:2380" \
+  --listen-peer-urls "http://$MESH_IP:2380" \
+  --listen-client-urls "http://$MESH_IP:2379,http://127.0.0.1:2379" \
+  --advertise-client-urls "http://$MESH_IP:2379" \
+  --initial-cluster-token "$TOKEN" \
+  --initial-cluster "$ICLUSTER" \
+  --initial-cluster-state new
+
+# Health check:
+#   sudo docker exec etcd etcdctl --endpoints=http://10.10.0.1:2379,http://10.10.0.2:2379,http://10.10.0.3:2379 endpoint health --cluster

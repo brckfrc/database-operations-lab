@@ -3,7 +3,7 @@ GO
 
 PRINT '=== DMV MONITORING SCRIPT ===';
 
--- 1. En çok okuma yapan ve kaynak tüketen ilk 5 sorguyu bulma (Query Stats)
+-- 1. Find the top 5 queries with highest reads and resource consumption (Query Stats)
 PRINT '--- TOP 5 QUERY STATS BY LOGICAL READS ---';
 SELECT TOP 5
     t.text AS query_text,
@@ -14,12 +14,12 @@ SELECT TOP 5
     s.total_elapsed_time
 FROM sys.dm_exec_query_stats s
 CROSS APPLY sys.dm_exec_sql_text(s.sql_handle) t
-WHERE t.text NOT LIKE '%sys.dm_%' -- kendimizi hariç tutalım
+WHERE t.text NOT LIKE '%sys.dm_%' -- exclude ourselves
 ORDER BY s.total_logical_reads DESC;
 GO
 
--- 2. Hangi indeksler ne kadar kullanılıyor? (Index Usage)
--- Hiç kullanılmayan veya çok az okunup sürekli update alan yazma-ağırlıklı indeksleri tespit eder.
+-- 2. How much are indexes being used? (Index Usage)
+-- Detects write-heavy indexes that are rarely used or only read occasionally but constantly updated.
 PRINT '--- INDEX USAGE STATS ---';
 SELECT 
     OBJECT_NAME(s.object_id) AS table_name,
@@ -35,8 +35,8 @@ WHERE OBJECTPROPERTY(s.object_id, 'IsUserTable') = 1
 ORDER BY s.user_updates DESC, s.user_seeks ASC;
 GO
 
--- 3. Eksik İndeks Önerileri (Missing Index Details)
--- SQL Server'ın "Şu indeksi ekleseydin şu sorgun %90 hızlanırdı" dediği yer.
+-- 3. Missing Index Suggestions (Missing Index Details)
+-- The place where SQL Server says "If you added this index, your query would be 90% faster."
 PRINT '--- MISSING INDEX RECOMMENDATIONS ---';
 SELECT TOP 5
     d.statement AS impact_table,

@@ -2,6 +2,9 @@
 
 ## Hızlı Başlangıç
 
+> [!TIP]
+> Hemen denemek için aşağıdaki komutları kullanarak Docker ortamını saniyeler içinde başlatabilirsiniz.
+
 ```bash
 cd project-2-backup-recovery
 docker compose up -d
@@ -12,8 +15,20 @@ Ayrıca veritabanındaki değişiklikleri izlemek için DBeaver ile `localhost:5
 
 ---
 
+
 ## 1. Projenin Amacı
 Bu projenin amacı, geleneksel veritabanı yedekleme yöntemlerinin (örneğin sadece `pg_dump` almak) büyük ve aktif veritabanlarında yetersiz kalabileceğini göstermek ve buna karşılık endüstri standardı olan sürekli arşivleme (WAL - Write-Ahead Logging) tabanlı bir yedekleme altyapısı kurmaktır. Proje kapsamında tam (full), diferansiyel (diff) ve artımlı (incremental) yedekler alınarak, olası veri kaybı senaryolarında (yanlışlıkla veri silinmesi veya tablonun düşürülmesi) istenilen saniyeye (Point-In-Time Recovery - PITR) geri dönüş süreci gerçekleştirilmiştir.
+
+```mermaid
+timeline
+    title Point-in-Time Recovery (PITR) Akışı
+    T0 : Full Backup Alınır
+    T1 : Veriler Eklenir (WAL Arşivlenir)
+    T2 : Incremental Backup Alınır
+    T3 : Felaket! (DROP TABLE)
+    T4 : Restore to target (T3 öncesi)
+```
+
 
 ## 2. Kullanılan Platform ve Araçlar
 *   **DBMS:** PostgreSQL 16
@@ -34,7 +49,12 @@ Proje başlangıcında sistem sadece standart PostgreSQL imajı kullanıyordu ve
 ## 5. Yapılan İşlemler
 *   **Docker Ortamının Kurulması:** `pg-primary` adında asıl veritabanını, `pg-restore-test` adında ise yedeklerin sağlamlığını test etmek için kullan-at (ephemeral) bir konteyner ayağa kaldırıldı.
 *   **pgBackRest Yapılandırması:** `pgbackrest.conf` ayarlanarak yedek tutma politikaları (retention policy) belirlendi (ör: en az 2 tam, 4 diff yedeği tut). `postgresql.conf` dosyası düzenlenerek WAL arşivleme aktif hale getirildi.
-*   **Yedeklerin Alınması:** İlk olarak "Full Backup" alındı. Sisteme yeni transaction'lar eklenerek sırasıyla "Differential" ve "Incremental" yedekler tetiklendi.
+*   **Yedekleme Stratejisi (pgBackRest):**
+    | Yedek Tipi | Açıklama |
+    |---|---|
+    | **Full Backup** | Veritabanının tam kopyası. Geri yüklemenin temelini oluşturur. |
+    | **Differential** | Son Full Backup'tan beri değişenler. Hızlı geri yükleme sağlar. |
+    | **Incremental** | Son alınan yedekten (Full/Diff/Incr) beri değişenler. Yer kazandırır. |
 *   **Felaket Senaryoları (Disasters):**
     *   **Felaket A:** Yanlışlıkla tüm verilerin silinmesi (`DELETE FROM transactions`).
     *   **Felaket B:** Kritik tablonun yapısıyla beraber düşürülmesi (`DROP TABLE transactions`).
@@ -77,7 +97,8 @@ Proje başlangıcında sistem sadece standart PostgreSQL imajı kullanıyordu ve
 ## 10. Sonuç ve Değerlendirme
 Modern ve aktif sistemlerde veritabanı operasyonlarının en kritik ayaklarından biri olan yedekleme stratejisinin ne kadar önemli olduğu bu projede test edilmiştir. Sadece günlük (daily) yedekleme almanın bir kriz anında yeterli olmayacağı, WAL tabanlı Point-in-Time Recovery yeteneğine sahip `pgBackRest` gibi araçların üretim ortamlarında veri kaybını önlemede temel standart olduğu başarıyla ortaya konulmuştur.
 
-> **Not: Güvenlik ve Optimizasyon Denetimi (Audit)**
+> [!IMPORTANT]
+> **Güvenlik ve Optimizasyon Denetimi (Audit)**
 > Projenin tüm kodları, çalışabilirlik testleri sonrasında bir denetim sürecinden geçirilmiş olup, tespit edilen yapısal iyileştirmeler `OPTIMIZATIONS.md` dosyasında ayrıca raporlanmıştır. Bu dosya; projeyi test etmek için bilerek zayıf bırakılmış ayarların (örneğin Docker içerisindeki düz metin şifreler, `pg_hba.conf` içerisindeki `trust` ayarları veya eksik veritabanı indeksleri) gerçek bir "production" (canlı) ortama taşınmadan önce nasıl düzeltilmesi ve optimize edilmesi gerektiğini göstermek amacıyla hazırlanmış bir mühendislik farkındalık raporudur.
 
 

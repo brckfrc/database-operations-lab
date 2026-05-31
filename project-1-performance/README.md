@@ -2,6 +2,9 @@
 
 ## Hızlı Başlangıç
 
+> [!TIP]
+> Hemen denemek için aşağıdaki komutları kullanarak Docker ortamını saniyeler içinde başlatabilirsiniz.
+
 ```bash
 cd project-1-performance
 docker compose up -d
@@ -11,8 +14,25 @@ Ardından MSSQL CLI ile veya DBeaver üzerinden bağlanarak `sql/` klasöründek
 
 ---
 
+
 ## 1. Projenin Amacı
 Bu projenin temel amacı, büyük veri kümeleri (milyonlarca satır) üzerinde çalışan bir ilişkisel veritabanında, kötü tasarlanmış mimarinin ve yanlış yazılmış SQL sorgularının sisteme ne kadar büyük bir yük bindirdiğini ("Logical Reads", "CPU Time", "Table Scan" gibi metriklerle) kanıtlamaktır. Ardından, indeksleme stratejileri (Non-Clustered, Covering Index, Foreign Key Index) ve sorgu iyileştirmeleri (Sargable filtreleme) uygulayarak bu yükün nasıl büyük ölçüde düşürüldüğü (Optimizasyon) gösterilmiştir.
+
+```mermaid
+graph LR
+    subgraph Öncesi [Optimizasyon Öncesi - Darboğaz]
+        A(Kötü Sorgu<br>SELECT * / YEAR) -->|Milyonlarca Satır Tarama| B[Table Scan]
+        B -->|Yüksek RAM / Disk I/O| C((CPU %100<br>Gecikme))
+    end
+    
+    subgraph Sonrası [Optimizasyon Sonrası - Akıcı]
+        D(Optimize Sorgu<br>Sargable / Covering) -->|B-Tree Üzerinden Doğrudan Erişim| E[Index Seek]
+        E -->|Düşük Maliyet| F((CPU %1<br>Milisaniye))
+    end
+
+    C -.->|Performans Tuning| D
+```
+
 
 ## 2. Kullanılan Platform ve Araçlar
 - **DBMS:** Microsoft SQL Server (Docker Container üzerinden `mcr.microsoft.com/mssql/server:2022-latest` imajı ile çalıştırıldı).

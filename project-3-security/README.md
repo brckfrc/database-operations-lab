@@ -33,14 +33,32 @@ python app/injection_demo.py
 | Uygulama şeması | `hospital_app` / `Hospital#2026app` |
 | Test kullanıcıları | `dr_house`, `nurse_joy`, `reception1`, `auditor1` |
 
+> [!CAUTION]
 > Şifreler ders/lab amaçlıdır; gerçek ortamda kullanılmamalıdır.
 
 🎥 **Video:** _(eklenecek)_
 
 ---
 
+
 ## 1. Projenin Amacı
 Bu projenin temel amacı, bir "Hastane Bilgi Sistemi" senaryosu üzerinden, hassas verinin (TC kimlik numarası, tanı, tedavi) korumasız tutulduğu **güvensiz bir başlangıç durumundan**, katmanlı güvenlik kontrolleriyle donatılmış **güvenli bir hedef duruma** geçişi somut önce-sonra kanıtlarıyla göstermektir. Dört temel güvenlik ekseni uygulanmıştır: **(1)** rol tabanlı erişim kontrolü (en az yetki prensibi), **(2)** hassas alanın AES-256 ile şifrelenmesi, **(3)** yetkiye göre veri maskeleme, **(4)** SQL Injection'a karşı savunma ve **(5)** tüm hassas erişimlerin denetim (audit) kaydı altına alınması. Her bir kontrol, ilgili kullanıcının ne yapıp ne yapamadığı canlı olarak test edilerek doğrulanmıştır.
+
+```mermaid
+graph TD
+    subgraph Roller ve Erişim (RBAC)
+        A(System Admin) -->|Audit Trail İnceleme| B[Unified Audit]
+        C(Doctor) -->|Şifre Çözme Yetkisi| D[AES-256 Şifreli Veri]
+        E(Receptionist) -->|Kısıtlı Erişim| F[Maskeli Görünüm<br>XXX-XX-1234]
+        G(Auditor) -->|Read-Only| B
+    end
+    
+    subgraph Veritabanı (FREEPDB1)
+        D --> H[(Patients Tablosu)]
+        F --> H
+    end
+```
+
 
 ## 2. Kullanılan Platform ve Araçlar
 - **DBMS:** Oracle Database 23ai Free (Docker Container üzerinden `gvenzl/oracle-free:23-slim` imajı ile çalıştırıldı).
@@ -84,6 +102,7 @@ Projedeki tüm kodlar numaralı olarak `sql/` (ve `app/`) klasörü altındadır
 - `07_test_reception.sql` / `08_test_doctor.sql` / `09_test_auditor.sql` / `10_audit_review.sql`: Her biri **ilgili kullanıcıyla** çalışan, yetkili/engellenen erişimleri ve denetim kayıtlarını gösteren test scriptleridir. (`scripts/run_security_tests.sh` ile sırayla çalıştırılır.)
 - `app/injection_demo.py`: SQL Injection'ın zafiyetli ve güvenli versiyonlarını karşılaştıran Python demosu.
 
+> [!TIP]
 > **Çalıştırma yardımcısı:** `scripts/run_sql.sh '<bağlantı>' <dosya>` — bir SQL dosyasını container içindeki `sqlplus`'a doğru kullanıcıyla iletir. Adım adım komutlar için "Hızlı Başlangıç" bölümüne bakınız.
 
 ## 7. Ekran Görüntüleri

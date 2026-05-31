@@ -2,19 +2,45 @@
 
 ## Hızlı Başlangıç
 
+> [!TIP]
+> Hemen denemek için aşağıdaki komutları kullanarak Docker ortamını saniyeler içinde başlatabilirsiniz.
+
 ```bash
 cd project-5-etl
 docker compose up -d
 ```
 
-Konteyner ayağa kalkarken Docker içindeki otomatik yapılandırma sayesinde `sql/` klasöründeki tüm başlangıç ve ETL scriptleri kendi kendine sırayla çalışır. Kalite raporunu terminalden görmek için şunu çalıştırabilirsiniz:
+> [!NOTE]
+> Konteyner ayağa kalkarken Docker içindeki otomatik yapılandırma sayesinde `sql/` klasöründeki tüm başlangıç ve ETL scriptleri kendi kendine sırayla çalışır. Kalite raporunu terminalden görmek için şunu çalıştırabilirsiniz:
 
 ```bash
 docker exec -i etl_postgres psql -U etl_user -d etl_db < sql/03_quality_report.sql
 ```
 
+
 ## 1. Projenin Amacı
 Bu projede, aynı "Müşteri (CRM)" eksenindeki iki farklı dış veri kaynağından (`Customers` ve `Leads`) gelen verilerin, ortak bir veri merkezinde başarıyla entegre edilmesi hedeflenmiştir. ETL pipeline kullanılarak, farklı kaynakların şemaları ortak bir hedefe birleştirilmiş (`UNION ALL`), veri standardizasyonu sağlanmış ve özellikle **aynı kaydın her iki platformda bulunması durumunda (Lead to Customer conflict)** kurumsal önceliklere (Customer > Lead) göre tekilleştirme yapılmıştır. Hatalı ve eksik veriler reddedilmiş ve karantinaya alınmıştır.
+
+```mermaid
+flowchart TD
+    subgraph E [1. Extract - Kaynak Veri]
+        C[(Customers CSV)] --> S1[stg_customers]
+        L[(Leads CSV)] --> S2[stg_leads]
+    end
+
+    subgraph T [2. Transform - Veri Temizleme]
+        S1 & S2 --> U{UNION ALL & Standartlaştırma}
+        U --> V{Veri Kalitesi Kontrolü}
+        V -->|Eksik/Hatalı (Geçersiz E-posta)| R[(crm_contacts_rejected)]
+        V -->|Geçerli Veri| D{Tekilleştirme / Deduplication}
+        D -->|Öncelik Çakışması (Lead kaybeder)| DUP[(crm_contacts_duplicates)]
+    end
+
+    subgraph L [3. Load - Hedef]
+        D -->|Temiz & Tekil Kayıt| CL[(crm_contacts_clean)]
+    end
+```
+
 
 ## 2. Kullanılan Platform ve Araçlar
 - Veritabanı Motoru: PostgreSQL 16 (Docker)
@@ -34,6 +60,15 @@ Başlangıç durumunda `stg_customers` ve `stg_leads` tablolarında toplam `104+
 - Ekstra `source_priority` adlı öncelik kolonu sisteme tanıtıldı (`Customer`=1, `Lead`=2).
 - Veri Doğrulama (Validation) aşamasında sorunlu mail formatı ve test hesapları elenerek `crm_contacts_rejected` karantina tablosuna aktarıldı.
 - Temiz veriler üzerinden `ROW_NUMBER() OVER (PARTITION BY email ORDER BY source_priority ASC)` uygulanarak Tekilleştirme (Deduplication) ve Önceliklendirme başarı ile işletildi.
+
+- **Temizlenen Veri Örnekleri (Standardizasyon Kuralları):**
+  | Kural | Kötü Veri (Before) | Temiz Veri (After) |
+  |---|---|---|
+  | **Büyük/Küçük Harf (INITCAP)** | `jOhN dOe` | `John Doe` |
+  | **Boşluk Temizleme (TRIM)** | `  jane.doe@mail.com   ` | `jane.doe@mail.com` |
+  | **E-posta Doğrulama (Regex)** | `invalid-email` / `test@test` | Reddedilir (`rejected` tablosuna) |
+  | **Çakışma Çözümü (Priority)** | `a@a.com` (Customer) + `a@a.com` (Lead) | Yalnızca `Customer` kaydı `clean`'e gider. |
+
 - Temiz hedefe ulaşan benzersiz müşteriler `crm_contacts_clean` tablosuna aktarılırken, "Lead" kaynağından gelen ancak "Customer" statüsü yüzünden sisteme tekrar girmesi engellenen **ezilen kayıtlar** (suppressed data), sonradan incelenebilmesi için `crm_contacts_duplicates` tablosuna gönderildi.
 
 ## 6. Kullanılan SQL Komutları ve Açıklamaları

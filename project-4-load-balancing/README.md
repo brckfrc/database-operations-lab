@@ -52,28 +52,36 @@ bash scripts/03_failover_test.sh        # otomatik failover senaryosu
 
 ## Mimari Genel Bakış
 
+```mermaid
+flowchart TD
+    subgraph WG [WireGuard Şifreli Mesh - 10.10.0.0/24]
+        direction LR
+        subgraph Node1 [Contabo Node - 10.10.0.1]
+            H[HAProxy]
+            P1[(PostgreSQL 16 Primary)]
+            E1(etcd)
+            H -->|:5000 Write| P1
+        end
+        
+        subgraph Node2 [AWS Node - 10.10.0.2]
+            P2[(PostgreSQL 16 Replica)]
+            E2(etcd)
+        end
+        
+        subgraph Node3 [Witness Node - 10.10.0.3]
+            E3(etcd)
+        end
+        
+        H -.->|:5001 Read| P2
+        P1 ====>|Streaming Replication| P2
+        E1 <--> E2 <--> E3 <--> E1
+    end
+    
+    U(Uygulama) -->|Read/Write Trafiği| H
 ```
-                     WireGuard şifreli mesh — 10.10.0.0/24
-                       (mevcut OpenVPN'den tamamen ayrı)
-   ┌───────────────────────┬────────────────────────┬───────────────────────┐
-   │                       │                        │
-┌──────────────────┐  ┌──────────────────┐   ┌────────────────────────┐
-│  CONTABO         │  │  AWS (t4g.small) │   │  witness-node             │
-│  10.10.0.1       │  │  10.10.0.2       │   │  10.10.0.3             │
-│  x86 · 8GB       │  │  ARM · 2GB       │   │  mevcut prod sunucu    │
-├──────────────────┤  ├──────────────────┤   ├────────────────────────┤
-│ PostgreSQL 16    │◄─►│ PostgreSQL 16    │   │ etcd (WITNESS)         │
-│ Patroni · etcd   │  │ Patroni · etcd   │   │ yalnız quorum, ~150MB  │
-│ HAProxy          │  │                  │   │ (PostgreSQL YOK)       │
-└────────┬─────────┘  └──────────────────┘   └────────────────────────┘
-         │  ▲                  ▲
-         │  └── streaming replication (primary → replica) ──┘
-         │
-   uygulama → HAProxy :5000 (write→primary) · :5001 (read→replica) · :7000 (stats)
 
-   Failover: primary çökerse → etcd quorum (kalan DB + witness = 2/3) →
-             Patroni kalan düğümü OTOMATİK primary yapar (insan müdahalesi yok).
-```
+> [!NOTE]
+> **Failover Mekanizması:** Primary (Node 1) çökerse, etcd quorum sayesinde kalan düğümler (Node 2 + Witness = 2/3 çoğunluk) saniyeler içinde yeni lideri belirler ve Patroni, Node 2'yi **OTOMATİK** olarak yeni Primary yapar. HAProxy trafiği kesintisiz olarak yeni lidere yönlendirir.
 
 ## 1. Projenin Amacı
 Bu projenin temel amacı, tek bir veritabanı sunucusuna bağımlılığın (Single Point of Failure) yarattığı riski ortadan kaldıran, coğrafi olarak dağıtık ve **yüksek erişilebilir (HA)** bir PostgreSQL kümesi kurmaktır. Üç farklı sağlayıcıdaki (Contabo, AWS, mevcut prod sunucu) üç gerçek makine, şifreli bir özel ağ (WireGuard mesh) üzerinden birbirine bağlanır. Bu küme üzerinde **(1)** verinin gerçek zamanlı çoğaltılması (streaming replication), **(2)** primary sunucu çöktüğünde insan müdahalesi olmadan yeni bir liderin otomatik seçilmesi (Patroni + etcd failover) ve **(3)** okuma/yazma yükünün uygun düğümlere dağıtılması (HAProxy) somut önce-sonra kanıtlarıyla gösterilmiştir.

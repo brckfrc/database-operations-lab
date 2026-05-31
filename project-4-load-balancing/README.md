@@ -119,27 +119,55 @@ Tüm yapılandırma ve betikler katman katman repo'da yer alır (gerçek sırlar
 - `scripts/03_failover_test.sh`, `scripts/04_replication_status.sh` — failover ve durum betikleri.
 
 ## 7. Ekran Görüntüleri
-Dağıtık kümenin çalıştığını ve failover'ın gerçekleştiğini gösteren temel görüntüler aşağıdadır. Diğer tüm detaylar `screenshots/` dizinindedir.
+Aşağıdaki yedi görüntü, projeyi alttan üste — şifreli ağdan başlayıp otomatik failover'a kadar — adım adım kanıtlar. Tüm görseller `screenshots/` dizinindedir.
 
-**1. Mimari / Node Diyagramı:**
+---
+
+### 7.1 · Mimari / Node Diyagramı
+Üç gerçek makinenin WireGuard mesh üzerinden nasıl bağlandığını ve hangi servisi çalıştırdığını özetler.
+
 ![Node diyagramı](screenshots/11_node_diagram.png)
 
-**2. WireGuard Mesh — Üç Düğüm Arası Şifreli Bağlantı (`wg show`):**
+---
+
+### 7.2 · WireGuard Mesh — Şifreli Özel Ağ (`wg show`)
+Üç düğüm arasında karşılıklı **handshake** ve veri transferi. Tüm küme trafiği bu şifreli tünelden geçer; hiçbir veritabanı portu public internete açık değildir.
+
 ![WireGuard handshake](screenshots/01_wireguard_handshake.png)
 
-**3. etcd 3-Node Quorum — Sağlık Durumu (3/3 healthy):**
+---
+
+### 7.3 · etcd 3-Node Quorum — Sağlık Durumu
+Üç düğümün de `is healthy` döndüğü konsensüs katmanı. Bu quorum sayesinde bir DB düğümü çökse bile **2/3 çoğunluk** korunur ve failover mümkün olur.
+
 ![etcd health](screenshots/03_etcd_health.png)
 
-**4. Streaming Replication — `patronictl list` (Leader + Replica, Lag 0):**
+---
+
+### 7.4 · Streaming Replication — `patronictl list`
+Kümenin canlı topolojisi: bir düğüm **Leader**, diğeri **Replica**, replikasyon gecikmesi (**Lag**) sıfır. Patroni tüm bu durumu etcd üzerinden yönetir.
+
 ![patronictl list](screenshots/04_patroni_list_initial.png)
 
-**5. Replication Kanıtı — Primary'de yazılan veri Replica'da görünür, Replica read-only:**
+---
+
+### 7.5 · Replication Kanıtı — Yazma Çoğalıyor, Replica Korumalı
+Tek karede üç kanıt: **(1)** primary'ye yazılan kayıt başarıyla eklenir, **(2)** aynı veri replica'da anında görünür, **(3)** replica'ya yazma denemesi `cannot execute INSERT in a read-only transaction` ile reddedilir.
+
 ![Replication kanıtı](screenshots/05_replication_proof.png)
 
-**6. Otomatik Failover — Önce (Contabo Leader) → Sonra (AWS otomatik Leader):**
+---
+
+### 7.6 · Otomatik Failover ⭐
+**Önce / Sonra** karşılaştırması: mevcut primary durdurulduğunda, Patroni + etcd quorum **insan müdahalesi olmadan** kalan düğümü yeni Leader seçer. Timeline değerinin arttığına (ör. `2 → 3`) ve Leader'ın el değiştirdiğine dikkat edin.
+
 ![Failover öncesi/sonrası](screenshots/08_failover_after.png)
 
-**7. HAProxy — Read/Write Split ve Stats Paneli:**
+---
+
+### 7.7 · HAProxy — Read/Write Split ve Stats Paneli
+Yük dengeleyici paneli: `postgres_write` backend'inde yalnızca **primary** düğümü UP (yeşil), `postgres_read` backend'inde yalnızca **replica** UP. Uygulama tek bir adrese bağlanır; doğru yönlendirmeyi HAProxy yapar.
+
 ![HAProxy stats](screenshots/09_haproxy_stats.png)
 
 ## 8. Elde Edilen Sonuçlar

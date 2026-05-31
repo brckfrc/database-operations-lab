@@ -12,8 +12,8 @@
 | # | Proje | DBMS | Dönem | Durum |
 |---|-------|------|-------|-------|
 | 1 | Performans Optimizasyonu ve İzleme | MSSQL | Vize | Tamamlandı `[x]` |
-| 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | `[ ]` |
-| 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | `[ ]` |
+| 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
+| 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
 | 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
 | 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | Tamamlandı `[x]` |
 
@@ -216,30 +216,30 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 #### Checklist
 
 **A. Problem Tanımı**
-- `[ ]` Proje amacını ve gösterilecek sorunları netleştir
+- `[x]` Proje amacını ve gösterilecek sorunları netleştir
 
 **B. Ortam Kurulumu**
-- `[ ]` Oracle container kur (`gvenzl/oracle-free:23-slim` — Oracle 23ai Free, Apple Silicon native)
-- `[ ]` Veritabanı ve tablo yapısını oluştur
-- `[ ]` Örnek veri yükle
+- `[x]` Oracle container kur (`gvenzl/oracle-free:23-slim` — Oracle 23ai Free, Apple Silicon native)
+- `[x]` Veritabanı ve tablo yapısını oluştur
+- `[x]` Örnek veri yükle
 
 **C. Başlangıç Durumu**
-- `[ ]` Aşırı yetkili kullanıcı / korumasız veri / audit kapalı durumu göster
+- `[x]` Aşırı yetkili kullanıcı / korumasız veri / audit kapalı durumu göster
 
 **D. Uygulama**
-- `[ ]` Kullanıcı ve rol tanımları oluştur
-- `[ ]` Tablo bazlı yetki verme / kısıtlama
-- `[ ]` Hassas alanlarda koruma yaklaşımı (masking / encryption)
-- `[ ]` Audit / aktivite izleme aç
-- `[ ]` Güvenlik test senaryosu çalıştır
+- `[x]` Kullanıcı ve rol tanımları oluştur
+- `[x]` Tablo bazlı yetki verme / kısıtlama
+- `[x]` Hassas alanlarda koruma yaklaşımı (masking / encryption)
+- `[x]` Audit / aktivite izleme aç
+- `[x]` Güvenlik test senaryosu çalıştır
 
 **E. Sonuç / Kanıt**
-- `[ ]` Yetki verilen ve engellenen kullanıcı örnekleri
-- `[ ]` Audit çıktıları
-- `[ ]` Önce-sonra güvenlik farkı tablosu
+- `[x]` Yetki verilen ve engellenen kullanıcı örnekleri
+- `[x]` Audit çıktıları
+- `[x]` Önce-sonra güvenlik farkı tablosu
 
 **F. Raporlama**
-- `[ ]` 10 başlıklı teknik rapor yaz
+- `[x]` 10 başlıklı teknik rapor yaz
 
 **G. Video**
 - `[ ]` ≥ 10 dk video çek

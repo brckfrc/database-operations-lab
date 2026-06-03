@@ -14,9 +14,9 @@ This repository contains 5 independent database lab projects (MSSQL, PostgreSQL,
 |---|-------|------|------|-----------|-------|
 | 1 | Performance & monitoring | MSSQL | **Midterm** | [`project-1-performance/`](project-1-performance/) | [YouTube](https://youtu.be/CvUFwSyqpq8) |
 | 5 | Data cleaning & ETL | PostgreSQL | **Midterm** | [`project-5-etl/`](project-5-etl/) | [YouTube](https://youtu.be/DbLzWvbev1g) |
-| 2 | Backup & recovery | PostgreSQL | Final | [`project-2-backup-recovery/`](project-2-backup-recovery/) | - |
-| 3 | Security & access control | Oracle | Final | [`project-3-security/`](project-3-security/) | - |
-| 4 | Load balancing & distributed setup | PostgreSQL | Final | [`project-4-load-balancing/`](project-4-load-balancing/) | - |
+| 2 | Backup & recovery | PostgreSQL | Final | [`project-2-backup-recovery/`](project-2-backup-recovery/) | [YouTube](https://youtu.be/qDL4HiafrLk) |
+| 3 | Security & access control | Oracle | Final | [`project-3-security/`](project-3-security/) | [YouTube](https://youtu.be/qqjfPhXjd9M) |
+| 4 | Load balancing & distributed setup | PostgreSQL | Final | [`project-4-load-balancing/`](project-4-load-balancing/) | [YouTube](https://youtu.be/ryR_4mqYCAo) |
 
 ### ✨ Project Highlights
 

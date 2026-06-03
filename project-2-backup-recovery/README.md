@@ -13,6 +13,8 @@ docker compose up -d
 Sistem ayağa kalktıktan sonra yedek alma, felaket tetikleme ve geri yükleme testlerini yapmak için `scripts/` klasöründeki `.sh` dosyalarını sırayla çalıştırabilirsiniz.
 Ayrıca veritabanındaki değişiklikleri izlemek için DBeaver ile `localhost:5432` (Canlı Sistem) ve `localhost:5433` (Kurtarma Testi) portlarına bağlanabilirsiniz.
 
+🎥 **Video:** [YouTube Linki](https://youtu.be/qDL4HiafrLk)
+
 ---
 
 

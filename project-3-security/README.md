@@ -36,7 +36,7 @@ python app/injection_demo.py
 > [!CAUTION]
 > Şifreler ders/lab amaçlıdır; gerçek ortamda kullanılmamalıdır.
 
-🎥 **Video:** _(eklenecek)_
+🎥 **Video:** [YouTube Linki](https://youtu.be/qqjfPhXjd9M)
 
 ---
 

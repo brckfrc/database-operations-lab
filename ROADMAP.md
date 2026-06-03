@@ -12,9 +12,9 @@
 | # | Proje | DBMS | Dönem | Durum |
 |---|-------|------|-------|-------|
 | 1 | Performans Optimizasyonu ve İzleme | MSSQL | Vize | Tamamlandı `[x]` |
-| 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
-| 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
-| 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | Uygulama ve rapor tamamlandı, video bekliyor `[~]` |
+| 2 | Yedekleme ve Felaketten Kurtarma | PostgreSQL | Final | Tamamlandı `[x]` |
+| 3 | Güvenlik ve Erişim Kontrolü | Oracle | Final | Tamamlandı `[x]` |
+| 4 | Yük Dengeleme ve Dağıtık Yapılar | PostgreSQL | Final | Tamamlandı `[x]` |
 | 5 | Veri Temizleme ve ETL Süreçleri | PostgreSQL | Vize | Tamamlandı `[x]` |
 
 ### Debian Sunucu İhtiyacı
@@ -201,7 +201,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` 10 başlıklı teknik rapor yaz
 
 **G. Video**
-- `[ ]` ≥ 10 dk video çek
+- `[x]` ≥ 10 dk video çekildi. **[Video Linki (YouTube)](https://youtu.be/qDL4HiafrLk)**
 
 ---
 
@@ -242,7 +242,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` 10 başlıklı teknik rapor yaz
 
 **G. Video**
-- `[ ]` ≥ 10 dk video çek
+- `[x]` ≥ 10 dk video çekildi. **[Video Linki (YouTube)](https://youtu.be/qqjfPhXjd9M)**
 
 ---
 
@@ -286,7 +286,7 @@ Her projede aşağıdaki omurga takip edilir. Bu yapı rapor, video ve Git düze
 - `[x]` 10 başlıklı teknik rapor yaz *(`project-4-load-balancing/README.md` - ekran görüntüleri eklenecek.)*
 
 **G. Video**
-- `[ ]` ≥ 10 dk video çek
+- `[x]` ≥ 10 dk video çekildi. **[Video Linki (YouTube)](https://youtu.be/ryR_4mqYCAo)**
 
 ---
 

@@ -54,7 +54,7 @@ Bir HAProxy çökerse libpq otomatik diğerini dener; `target_session_attrs=read
 
 > **Not:** Tablodaki AWS, Contabo ve witness-node ibareleri; bizim bu projeyi laboratuvar ortamında ayağa kaldırırken kullandığımız özel test sunucularımızdır. Bu projeyi klonlayıp kendi ortamınızda denemek isterseniz, repo içindeki `.example` şablonlarını kullanarak **kendi belirleyeceğiniz herhangi 3 sunucu (veya sanal makine)** üzerinde birebir aynı mimariyi kurabilirsiniz. *(Şablon dosyalarındaki `node1`, `node2` ve `node3` isimleri sırasıyla tablodaki Contabo, AWS ve witness-node sunucularına karşılık gelmektedir.)*
 
-🎥 **Video:** _(eklenecek)_
+🎥 **Video:** [YouTube Linki](https://youtu.be/ryR_4mqYCAo)
 
 ---
 

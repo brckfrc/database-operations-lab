@@ -3,7 +3,7 @@
 > Bu doküman, ders kapsamındaki 5 projeyi iş bazında takip etmek için kullanılır.
 > Her proje kendi bölümünde tanım, checklist ve teslim çıktılarıyla yer alır.
 > Teknik detaylar ve geliştirme günlüğü için → [`docs/PROGRESS.md`](PROGRESS.md) 
-> 📄 **[Vize Teslim Raporu (PDF)](docs/school/21290270_Vize.pdf)**
+> 📄 **[Vize Teslim Raporu (PDF)](docs/school/21290270_Vize.pdf)** | 🎓 **[Final Teslim Raporu (PDF)](docs/school/21290270_Final.pdf)**
 
 ---
 

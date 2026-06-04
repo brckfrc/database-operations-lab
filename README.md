@@ -2,7 +2,7 @@
 
 **BLM4522 - Ağ Tabanlı Paralel Dağıtım Sistemleri**
 
-📄 **[Midterm Submission Report (PDF)](docs/school/21290270_Vize.pdf)**
+📄 **[Midterm Submission Report (PDF)](docs/school/21290270_Vize.pdf)** | 🎓 **[Final Submission Report (PDF)](docs/school/21290270_Final.pdf)**
 
 This repository contains 5 independent database lab projects (MSSQL, PostgreSQL, Oracle). 
 
